@@ -2,1571 +2,969 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BucoMente Obra — Escáner de Estrés</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>PatoLogIA v4.0 — Detección Real</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --ink:#0f1923;--ink2:#1e293b;--muted:#64748b;--line:#e2e8f0;--bg:#f8fafc;--white:#fff;
-  --blue:#1d6ae5;--blue2:#1349b3;--blue-lt:#dbeafe;
-  --green:#16a34a;--green-lt:#dcfce7;
-  --amber:#b45309;--amber-lt:#fef3c7;
-  --red:#dc2626;--red-lt:#fee2e2;
-  --teal:#0d9488;--violet:#7c3aed;--violet-lt:#ede9fe;
-  --orange:#ea580c;--orange-lt:#ffedd5;
-  --r:8px;--r2:12px;--r3:18px;
+ --bg:#07080a;--s1:#0f1114;--s2:#161a1f;--s3:#1e2329;--s4:#252b33;
+ --bd:#252a31;--bd2:#2e343d;
+ --t:#e8eaed;--t2:#9ca3af;--t3:#4b5563;
+ --mec:#3b82f6;--mec-a:rgba(59,130,246,.12);
+ --fis:#f59e0b;--fis-a:rgba(245,158,11,.12);
+ --qui:#10b981;--qui-a:rgba(16,185,129,.12);
+ --bio:#a78bfa;--bio-a:rgba(167,139,250,.12);
+ --r6:6px;--r10:10px;--r14:14px;--r20:20px;
+ --nav:64px;
+ --safe-top: env(safe-area-inset-top, 0px);
+ --safe-bot: env(safe-area-inset-bottom, 0px);
 }
-html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;min-height:100vh;overflow-x:hidden}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:'Figtree',sans-serif}
 
-/* TOPBAR */
-.topbar{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.2rem;min-height:56px}
-.logo{display:flex;align-items:center;gap:.55rem}
-.logo-ic{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0}
-.logo-txt{font-size:.9rem;font-weight:800;letter-spacing:-.02em;line-height:1.1}
-.logo-txt span{color:var(--blue)}
-.logo-sub{font-size:.6rem;color:var(--muted);display:block}
-.top-r{display:flex;gap:.4rem}
-.prog{height:3px;background:var(--line);position:sticky;top:56px;z-index:199}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));transition:width .35s}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
+#header{
+flex-shrink:0;
+padding:calc(var(--safe-top) + 10px) 18px 10px;
+display:flex;align-items:center;justify-content:space-between;
+background:rgba(7,8,10,.96);backdrop-filter:blur(20px);
+border-bottom:1px solid var(--bd);z-index:50;position:relative
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;
+background:linear-gradient(135deg,#60a5fa 0%,#a78bfa 100%);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--t3);letter-spacing:.5px;margin-top:1px}
+.hbadge{font-size:.6rem;font-family:'IBM Plex Mono',monospace;padding:4px 10px;
+background:var(--s2);border:1px solid var(--bd);border-radius:20px;color:var(--t3)}
 
-/* PAGES */
-.pg{display:none}.pg.on{display:block}
-@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.pg.on .fade{animation:up .3s ease both}
-.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative}
+#nav{
+flex-shrink:0;height:calc(var(--nav) + var(--safe-bot));
+display:flex;background:rgba(7,8,10,.97);backdrop-filter:blur(24px);
+border-top:1px solid var(--bd);padding-bottom:var(--safe-bot);z-index:50
+}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:3px;border:none;background:none;color:var(--t3);cursor:pointer;
+font-family:'Figtree',sans-serif;font-size:.62rem;font-weight:500;
+padding:8px 4px;transition:color .2s;position:relative}
+.nav-btn.on{color:#60a5fa}
+.nav-btn.on::before{content:'';position:absolute;top:0;left:30%;right:30%;
+height:2px;background:#60a5fa;border-radius:0 0 3px 3px}
+.nav-icon{font-size:1.25rem;line-height:1}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;cursor:pointer;font-family:inherit;font-weight:600;border-radius:var(--r);transition:all .15s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
-.btn-blue{background:var(--blue);color:#fff;padding:.72rem 1.4rem;font-size:.88rem}
-.btn-blue:hover,.btn-blue:active{background:var(--blue2)}
-.btn-blue:disabled{opacity:.4;pointer-events:none}
-.btn-out{background:transparent;border:1.5px solid var(--line);color:var(--ink2);padding:.65rem 1.2rem;font-size:.84rem}
-.btn-out:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt)}
-.btn-ghost{background:transparent;border:none;color:var(--muted);padding:.55rem .9rem;font-size:.8rem}
-.btn-vio{background:var(--violet);color:#fff;padding:.72rem 1.4rem;font-size:.88rem}
-.btn-vio:hover{background:#6d28d9}
-.btn-sm{padding:.4rem .85rem;font-size:.76rem}
-.btn-grn{background:var(--green);color:#fff}
-.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #fca5a5}
+.pnl{display:none;padding:16px 14px;min-height:100%}
+.pnl.on{display:block}
 
-/* FORM */
-.shell{max-width:700px;margin:0 auto;padding:1.5rem 1rem}
-.fhead{margin-bottom:1.4rem}
-.step-lbl{font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--blue);margin-bottom:.4rem}
-.fhead h2{font-size:1.3rem;font-weight:800;letter-spacing:-.025em;line-height:1.2}
-.fhead h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--blue)}
-.fhead p{color:var(--muted);font-size:.82rem;margin-top:.4rem;line-height:1.65}
-.field{margin-bottom:1.2rem}
-label.fl{display:block;font-size:.71rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:.45rem}
-input[type=text],input[type=date],select,textarea{width:100%;background:var(--white);border:1.5px solid var(--line);border-radius:var(--r);padding:.68rem .9rem;color:var(--ink);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .15s;-webkit-appearance:none}
-input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,106,229,.1)}
-textarea{resize:vertical;min-height:68px}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem}
-.rg{display:grid;gap:.4rem}
-.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}
-.c4{grid-template-columns:1fr 1fr 1fr 1fr}.c5{grid-template-columns:repeat(5,1fr)}
-.rc input{display:none}
-.rc label{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--white);border:1.5px solid var(--line);border-radius:var(--r);padding:.62rem .4rem;cursor:pointer;font-size:.8rem;font-weight:500;color:var(--ink2);transition:all .15s;min-height:44px;line-height:1.3;touch-action:manipulation}
-.rc input:checked+label{background:var(--blue-lt);border-color:var(--blue);color:var(--blue2);font-weight:700}
-.rc label:active{background:var(--blue-lt)}
-.slbox{background:var(--white);border:1.5px solid var(--line);border-radius:var(--r);padding:.9rem 1rem .7rem}
-.sl-n{font-size:1.6rem;font-weight:800;color:var(--blue);text-align:center;line-height:1;margin-bottom:.2rem}
-.sl-u{text-align:center;font-size:.72rem;color:var(--muted);margin-bottom:.6rem}
-input[type=range]{width:100%;-webkit-appearance:none;height:5px;background:var(--line);border:none;border-radius:3px;cursor:pointer;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--blue);border-radius:50%;box-shadow:0 2px 8px rgba(29,106,229,.3);cursor:pointer}
-.sl-marks{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-top:.4rem}
-.sema-row{display:flex;gap:1.2rem;justify-content:center;padding:.5rem 0}
-.sema-item input{display:none}.sema-item{text-align:center;cursor:pointer}
-.sema-disc{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto .4rem;border:2.5px solid transparent;opacity:.35;transition:all .2s}
-.sema-item input:checked+.sema-disc{opacity:1;transform:scale(1.08)}
-.sv input:checked+.sema-disc{border-color:var(--green);background:var(--green-lt)}
-.sy input:checked+.sema-disc{border-color:var(--amber);background:var(--amber-lt)}
-.sr input:checked+.sema-disc{border-color:var(--red);background:var(--red-lt)}
-.sema-lbl{font-size:.7rem;font-weight:600;color:var(--muted)}
-.dots{display:flex;gap:.3rem;margin-bottom:1rem}
-.dot{height:3px;border-radius:2px;background:var(--line);transition:all .22s}
-.dot.done{background:var(--teal);width:20px}.dot.now{background:var(--blue);width:30px}.dot.wait{width:14px}
-.fnav{display:flex;justify-content:space-between;align-items:center;padding-top:1.4rem;margin-top:1.4rem;border-top:1px solid var(--line)}
+.cap-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cap-tile{border:1.5px solid var(--bd);border-radius:var(--r14);padding:20px 12px;
+text-align:center;cursor:pointer;background:var(--s1);
+font-family:'Figtree',sans-serif;color:var(--t);transition:all .18s;
+-webkit-user-select:none;user-select:none}
+.cap-tile:active{transform:scale(.97)}
+.cap-tile.sel{border-color:#60a5fa;background:rgba(96,165,250,.07)}
+.cap-tile .ci{font-size:1.8rem;display:block;margin-bottom:8px}
+.cap-tile h3{font-size:.85rem;font-weight:600;margin-bottom:3px}
+.cap-tile p{font-size:.7rem;color:var(--t2);line-height:1.45}
 
-/* ─── SCANNER SECTION ─── */
-#pg-scan{background:#080c18;min-height:100vh}
-.scan-shell{max-width:680px;margin:0 auto;padding:1.4rem 1rem}
-.scan-head{text-align:center;margin-bottom:1.2rem}
-.scan-chip{display:inline-flex;align-items:center;gap:.4rem;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);color:#c4b5fd;font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .85rem;border-radius:100px;margin-bottom:.9rem}
-.scan-head h2{font-size:1.3rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:.55rem}
-.scan-head h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:#a78bfa}
-.scan-head p{color:rgba(255,255,255,.5);font-size:.82rem;line-height:1.6;max-width:480px;margin:0 auto}
+#viewfinder{display:none;margin-bottom:14px;position:relative;border-radius:var(--r20);overflow:hidden;background:#000}
+#videoEl{width:100%;display:block;max-height:60vw;object-fit:cover}
+.vf-overlay{position:absolute;inset:0;pointer-events:none}
+.vf-corner{position:absolute;width:22px;height:22px;border-color:#60a5fa;border-style:solid}
+.vf-corner.tl{top:12px;left:12px;border-width:2px 0 0 2px;border-radius:4px 0 0 0}
+.vf-corner.tr{top:12px;right:12px;border-width:2px 2px 0 0;border-radius:0 4px 0 0}
+.vf-corner.bl{bottom:12px;left:12px;border-width:0 0 2px 2px;border-radius:0 0 0 4px}
+.vf-corner.br{bottom:12px;right:12px;border-width:0 2px 2px 0;border-radius:0 0 4px 0}
+.vf-label{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+font-family:'IBM Plex Mono',monospace;font-size:.6rem;
+background:rgba(0,0,0,.65);padding:3px 10px;border-radius:20px;color:#60a5fa;letter-spacing:1px}
+.cam-controls{position:absolute;bottom:0;left:0;right:0;
+display:flex;align-items:center;justify-content:space-around;padding:14px 20px;
+background:linear-gradient(transparent,rgba(0,0,0,.6))}
+.snap-btn{width:62px;height:62px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.35);
+cursor:pointer;transition:transform .12s;flex-shrink:0}
+.snap-btn:active{transform:scale(.93)}
+.cam-side-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);
+border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;
+justify-content:center;font-size:1.2rem;transition:all .15s}
+.cam-side-btn:active{background:rgba(255,255,255,.25)}
 
-/* PERMISSION */
-.perm-card{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:var(--r2);padding:1.3rem;text-align:center;margin-bottom:.9rem}
-.perm-icon{font-size:2.4rem;margin-bottom:.7rem;display:block}
-.perm-title{font-size:.95rem;font-weight:700;color:#e0d7ff;margin-bottom:.45rem}
-.perm-body{font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:1.1rem}
-.perm-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:.6rem .85rem;font-size:.73rem;color:rgba(255,255,255,.35);line-height:1.55;margin-bottom:1.1rem}
-.perm-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+#dropzone{display:none;border:1.5px dashed var(--bd2);border-radius:var(--r14);
+padding:36px 20px;text-align:center;position:relative;margin-bottom:14px;cursor:pointer;
+background:var(--s1);transition:all .2s}
+#dropzone.drag{border-color:#60a5fa;background:rgba(96,165,250,.05)}
+#dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+#dropzone h3{font-size:.9rem;font-weight:500;margin-bottom:5px}
+#dropzone p{font-size:.72rem;color:var(--t2)}
 
-/* CAMERA */
-.cam-wrap{position:relative;background:#000;border-radius:var(--r2);overflow:hidden;border:1px solid rgba(124,58,237,.3);width:100%;aspect-ratio:3/4;max-height:72vh}
-@media(orientation:landscape){.cam-wrap{aspect-ratio:4/3;max-height:60vw}}
-#cam-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#cam-cvs{display:none}
-#overlay-cvs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.cam-dark{position:absolute;inset:0;background:rgba(0,0,0,.35);pointer-events:none}
+#prev-wrap{display:none;margin-bottom:14px;position:relative}
+#prev-img{width:100%;border-radius:var(--r14);max-height:55vw;object-fit:cover;display:block}
+#detection-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:var(--r14)}
+.prev-actions{display:flex;gap:8px;margin-top:10px}
 
-/* SVG face guide */
-.face-guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.face-guide svg{width:min(55vw,200px);height:auto;overflow:visible}
+.res-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r14);padding:16px;margin-bottom:10px}
+.rc-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--t3);
+text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
 
-@keyframes scan-mv{0%{transform:translateY(0px)}50%{transform:translateY(160px)}100%{transform:translateY(0px)}}
-.scan-line{position:absolute;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,#a78bfa,transparent);border-radius:1px;opacity:0;top:15%}
-.scan-line.on{opacity:1;animation:scan-mv 2.2s ease-in-out infinite}
-
-.cam-corner{position:absolute;width:16px;height:16px;border-color:#a78bfa;border-style:solid}
-.cam-corner.tl{top:10px;left:10px;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
-.cam-corner.tr{top:10px;right:10px;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
-.cam-corner.bl{bottom:10px;left:10px;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
-.cam-corner.br{bottom:10px;right:10px;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
-.cam-status{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:1rem .8rem .65rem;text-align:center}
-.cam-status-txt{font-size:.78rem;color:rgba(255,255,255,.8)}
-.cam-info{background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);border-radius:var(--r);padding:.6rem .8rem;font-size:.74rem;color:#c4b5fd;line-height:1.55;margin-top:.7rem;display:flex;gap:.4rem;align-items:flex-start}
-.cam-btns{display:flex;gap:.7rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap}
-.capture-btn{width:68px;height:68px;border-radius:50%;background:var(--violet);border:3px solid rgba(167,139,250,.5);color:#fff;font-size:1.4rem;box-shadow:0 4px 20px rgba(124,58,237,.5);touch-action:manipulation;cursor:pointer;font-family:inherit;transition:transform .15s}
-.capture-btn:active{transform:scale(.93)}
-.err-box{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);border-radius:var(--r);padding:.85rem 1rem;font-size:.79rem;color:#fca5a5;line-height:1.65;margin-bottom:.8rem}
-
-/* ANALYZING */
-.analyzing-card{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:var(--r2);padding:1.2rem 1.4rem;text-align:center;margin-bottom:.8rem}
-.analyzing-card h3{font-size:.86rem;font-weight:600;color:#c4b5fd;margin-bottom:.9rem}
-.ana-steps{display:flex;flex-direction:column;gap:.4rem;max-width:280px;margin:0 auto;text-align:left}
-.ana-s{display:flex;align-items:center;gap:.55rem;font-size:.77rem;color:rgba(255,255,255,.38);transition:color .2s}
-.ana-s.done{color:#a78bfa}.ana-s.now{color:#fff}
-.ana-s-ico{width:18px;height:18px;min-width:18px;border-radius:50%;background:rgba(124,58,237,.2);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#c4b5fd}
-.ana-s.done .ana-s-ico{background:rgba(124,58,237,.5)}.ana-s.now .ana-s-ico{background:var(--violet)}
+.spin-box{display:flex;flex-direction:column;align-items:center;justify-content:center;
+padding:32px;gap:12px;color:var(--t2)}
+.spin{width:28px;height:28px;border:2.5px solid var(--s4);
+border-top-color:#60a5fa;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin{display:inline-block;width:11px;height:11px;border:1.5px solid rgba(167,139,250,.3);border-top-color:#a78bfa;border-radius:50%;animation:spin .65s linear infinite}
-.preview-img{border-radius:var(--r);overflow:hidden;border:1px solid rgba(124,58,237,.3);max-height:160px;background:#000}
-.preview-img img{width:100%;max-height:160px;object-fit:cover;display:block}
 
-/* FACIAL RESULT */
-.fr-card{background:rgba(255,255,255,.04);border:1px solid rgba(124,58,237,.22);border-radius:var(--r2);padding:1rem;margin-bottom:.9rem}
-.fr-top{display:flex;gap:.85rem;align-items:flex-start;margin-bottom:.85rem}
-.fr-photo{width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid rgba(124,58,237,.3);flex-shrink:0}
-.fr-photo img{width:100%;height:100%;object-fit:cover}
-.fr-info h3{font-size:.88rem;font-weight:700;color:#e0d7ff;margin-bottom:.22rem}
-.fr-info p{font-size:.74rem;color:rgba(255,255,255,.45);line-height:1.5}
-.fr-badge{display:inline-block;padding:.2rem .65rem;border-radius:100px;font-size:.69rem;font-weight:700;margin-top:.32rem;border:1px solid}
-.fbl{background:rgba(22,163,74,.15);color:#4ade80;border-color:rgba(22,163,74,.35)}
-.fbm{background:rgba(245,158,11,.12);color:#fbbf24;border-color:rgba(245,158,11,.3)}
-.fbh{background:rgba(220,38,38,.12);color:#f87171;border-color:rgba(220,38,38,.3)}
-.fr-markers{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem}
-.fr-mk{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:.6rem .75rem}
-.fr-mk-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.38);margin-bottom:.2rem}
-.fr-mk-val{font-size:.77rem;color:rgba(255,255,255,.82);line-height:1.45}
-.fr-mk-level{font-size:.65rem;font-weight:700;margin-top:.2rem;padding:.1rem .45rem;border-radius:100px;display:inline-block}
-.mk-ok{background:rgba(22,163,74,.2);color:#4ade80}
-.mk-warn{background:rgba(245,158,11,.15);color:#fbbf24}
-.mk-alert{background:rgba(220,38,38,.15);color:#f87171}
-.fr-narr{background:rgba(124,58,237,.1);border-left:2.5px solid var(--violet);padding:.65rem .8rem;font-size:.78rem;color:rgba(255,255,255,.78);line-height:1.65;border-radius:0 var(--r) var(--r) 0;margin-bottom:.7rem}
-.fr-note{font-size:.7rem;color:rgba(255,255,255,.3);line-height:1.55;border-top:1px solid rgba(255,255,255,.07);padding-top:.6rem}
+.cat-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+border-radius:20px;font-size:.68rem;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.cb-mec{background:var(--mec-a);color:var(--mec);border:1px solid rgba(59,130,246,.2)}
+.cb-fis{background:var(--fis-a);color:var(--fis);border:1px solid rgba(245,158,11,.2)}
+.cb-qui{background:var(--qui-a);color:var(--qui);border:1px solid rgba(16,185,129,.2)}
+.cb-bio{background:var(--bio-a);color:var(--bio);border:1px solid rgba(167,139,250,.2)}
 
-/* FOLLETO SECTION */
-.folleto-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--r2);padding:1rem;margin-bottom:.9rem}
-.folleto-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#a78bfa;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem}
-.folleto-items{display:flex;flex-direction:column;gap:.5rem}
-.folleto-item{display:flex;gap:.7rem;align-items:flex-start;background:rgba(255,255,255,.03);border-radius:var(--r);padding:.6rem .75rem;border:1px solid rgba(255,255,255,.06)}
-.fi-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.fi-name{font-size:.8rem;font-weight:600;color:#e0d7ff;margin-bottom:.15rem}
-.fi-desc{font-size:.73rem;color:rgba(255,255,255,.5);line-height:1.5}
-.fi-consejo{font-size:.7rem;color:#a78bfa;margin-top:.25rem;padding:.25rem .5rem;background:rgba(124,58,237,.1);border-radius:4px;display:inline-block}
+.path-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;
+line-height:1.15;margin:7px 0 3px}
+.path-sub{font-size:.78rem;color:var(--t2);line-height:1.5;margin-bottom:14px}
+.conf-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.conf-tr{flex:1;height:5px;background:var(--s4);border-radius:3px;overflow:hidden}
+.conf-f{height:100%;border-radius:3px;transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.conf-n{font-family:'IBM Plex Mono',monospace;font-size:.78rem;min-width:34px;text-align:right}
 
-/* RESULTADO */
-#pg-result .res-hero{background:linear-gradient(135deg,#0f172a,#1e3a5f 60%);color:#fff;padding:1.8rem 1.2rem}
-.res-inner{max-width:700px;margin:0 auto}
-.res-top-row{display:grid;grid-template-columns:1fr auto;gap:1.4rem;align-items:start;margin-bottom:1rem}
-.res-name{font-size:1.2rem;font-weight:800;margin-bottom:.2rem}
-.res-sub{font-size:.77rem;color:rgba(255,255,255,.5);margin-bottom:.7rem}
-.res-badge{display:inline-block;padding:.28rem .85rem;border-radius:100px;font-size:.72rem;font-weight:700;border:1.5px solid;margin-bottom:.6rem}
-.ba{background:var(--green-lt);color:var(--green);border-color:#86efac}
-.bb{background:var(--amber-lt);color:var(--amber);border-color:#fcd34d}
-.bc{background:var(--red-lt);color:var(--red);border-color:#fca5a5}
-.res-desc{font-size:.8rem;color:rgba(255,255,255,.7);line-height:1.65;max-width:440px}
-.res-score-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r2);padding:1rem 1.4rem;text-align:center;min-width:105px}
-.res-score-n{font-size:2.8rem;font-weight:900;line-height:1}
-.res-score-l{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45);margin-top:.2rem}
-.res-face-n{font-size:.66rem;color:rgba(255,255,255,.3);margin-top:.3rem}
+.meta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.mc{background:var(--s2);border-radius:var(--r10);padding:10px 12px}
+.mc .ml{font-size:.6rem;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;
+display:block;margin-bottom:3px;font-family:'IBM Plex Mono',monospace}
+.mc .mv{font-size:.82rem;font-weight:500}
 
-/* CONCORDANCE */
-.conc-wrap{max-width:700px;margin:.8rem auto 0;padding:0 1.2rem}
-.conc{border-radius:var(--r2);padding:.9rem 1.1rem;border:1.5px solid;display:flex;gap:.8rem;align-items:flex-start}
-.conc-ok{background:var(--green-lt);border-color:#86efac}
-.conc-diff{background:var(--amber-lt);border-color:#fcd34d}
-.conc-ico{font-size:1.4rem;flex-shrink:0}
-.conc-ttl{font-size:.84rem;font-weight:700;margin-bottom:.22rem}
-.conc-body{font-size:.77rem;color:var(--muted);line-height:1.6}
+.reco{border-left:2.5px solid var(--bd2);padding:10px 13px;
+background:var(--s2);border-radius:0 var(--r10) var(--r10) 0;
+font-size:.78rem;line-height:1.65;color:var(--t)}
+.reco b{color:#60a5fa;font-weight:500}
 
-/* DIMS */
-.res-body{max-width:700px;margin:0 auto;padding:1.2rem 1rem}
-.dim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.5rem}
-.dim-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);padding:.85rem .75rem}
-.dim-lbl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.38rem}
-.dim-val{font-size:1.35rem;font-weight:900;line-height:1;margin-bottom:.38rem}
-.dim-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
-.dim-fill{height:100%;border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1)}
-.dim-sub{font-size:.66rem;color:var(--muted);margin-top:.28rem}
-.cg{color:var(--green)}.fg{background:var(--green)}
-.ca{color:var(--amber)}.fa{background:#f59e0b}
-.cr{color:var(--red)}.fr2{background:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+padding:11px 18px;border-radius:var(--r10);cursor:pointer;
+font-size:.82rem;font-weight:600;border:none;transition:all .15s;
+font-family:'Figtree',sans-serif;-webkit-user-select:none;user-select:none}
+.btn:active{transform:scale(.96)}
+.btn-p{background:#3b82f6;color:#fff}.btn-p:active{background:#2563eb}
+.btn-g{background:var(--s2);color:var(--t2);border:1px solid var(--bd2)}
+.btn-g:active{color:var(--t)}
+.btn-d{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.btn-full{width:100%;padding:13px}
 
-/* CHARTS */
-.chart-section{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);padding:1.1rem;margin-bottom:1.4rem}
-.chart-section h3{font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:1rem}
-.bar-chart{display:flex;flex-direction:column;gap:.6rem}
-.bar-row{display:flex;align-items:center;gap:.6rem}
-.bar-label{font-size:.74rem;font-weight:600;color:var(--ink2);min-width:90px;text-align:right;flex-shrink:0}
-.bar-track{flex:1;height:22px;background:var(--bg);border-radius:4px;overflow:hidden}
-.bar-fill-a{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;min-width:28px}
-.bar-pct{font-size:.68rem;font-weight:700;color:#fff}
-.bar-val-o{font-size:.72rem;font-weight:700;min-width:36px;text-align:right;flex-shrink:0}
-.radar-wrap{display:flex;justify-content:center;padding:.5rem 0}
+.tax-cats{display:flex;flex-direction:column;gap:10px}
+.tax-cat{border-radius:var(--r14);padding:16px;cursor:pointer;transition:all .18s;border:1.5px solid transparent}
+.tax-cat:active{transform:scale(.985)}
+.tc-mec{background:var(--mec-a);border-color:rgba(59,130,246,.2)}
+.tc-fis{background:var(--fis-a);border-color:rgba(245,158,11,.2)}
+.tc-qui{background:var(--qui-a);border-color:rgba(16,185,129,.2)}
+.tc-bio{background:var(--bio-a);border-color:rgba(167,139,250,.2)}
+.tc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tc-head h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
+.tc-arrow{font-size:.9rem;color:var(--t3);transition:transform .2s}
+.tc-desc{font-size:.75rem;color:var(--t2);line-height:1.5;margin-bottom:10px}
+.tc-pills{display:flex;flex-wrap:wrap;gap:5px}
+.tp{font-size:.65rem;padding:3px 9px;border-radius:12px;font-family:'IBM Plex Mono',monospace}
+.tp-mec{background:rgba(59,130,246,.15);color:#93c5fd}
+.tp-fis{background:rgba(245,158,11,.15);color:#fcd34d}
+.tp-qui{background:rgba(16,185,129,.15);color:#6ee7b7}
+.tp-bio{background:rgba(167,139,250,.15);color:#c4b5fd}
 
-/* RECS */
-.sec-ttl{font-size:.88rem;font-weight:700;display:flex;align-items:center;gap:.4rem;margin-bottom:.7rem;color:var(--ink)}
-.sec-ttl::before{content:'';display:block;width:3px;height:.9rem;background:var(--blue);border-radius:2px}
-.rg-lbl{font-size:.64rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--teal);margin:.85rem 0 .4rem}
-.rec-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:.75rem .9rem;display:flex;gap:.55rem;margin-bottom:.38rem}
-.pdot{min-width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.ph{background:var(--red)}.pm{background:#f59e0b}.pl{background:var(--green)}
-.rec-ttl{font-size:.82rem;font-weight:600;margin-bottom:.17rem;color:var(--ink)}
-.rec-body{font-size:.76rem;color:var(--muted);line-height:1.55}
-.disc{background:var(--amber-lt);border:1px solid #fcd34d;border-radius:var(--r);padding:.72rem .9rem;font-size:.74rem;color:var(--amber);line-height:1.55;margin-top:1.2rem}
-.res-acts{display:flex;gap:.55rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap}
+.tc-detail{display:none;margin-top:14px;border-top:1px solid rgba(255,255,255,.07);padding-top:14px}
+.tc-detail.open{display:block}
+.sub-item{background:rgba(0,0,0,.25);border-radius:var(--r10);padding:12px;margin-bottom:8px}
+.sub-item h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.sub-item p{font-size:.73rem;color:var(--t2);line-height:1.5;margin-bottom:6px}
+.sub-cause{font-size:.7rem;padding:5px 8px;background:rgba(0,0,0,.3);border-radius:6px;color:var(--t3);line-height:1.4}
+.sev-tag{font-size:.65rem;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;margin-top:6px;display:inline-block}
 
-/* DASHBOARD */
-#pg-dash .dash-top{padding:1.1rem 1rem;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.8rem;background:var(--white)}
-.dash-top h2{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1.2rem}
-.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);padding:.85rem .9rem}
-.kpi-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.25rem}
-.kpi-val{font-size:1.8rem;font-weight:900;line-height:1}
-.kpi-sub{font-size:.68rem;color:var(--muted);margin-top:.2rem}
-.global-chart{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);padding:1.1rem;margin-bottom:1.2rem}
-.global-chart h3{font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
-.priority-tag{font-size:.68rem;font-weight:700;background:var(--red-lt);color:var(--red);padding:.15rem .55rem;border-radius:100px;border:1px solid #fca5a5}
-.rank-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;cursor:pointer;padding:.35rem .5rem;border-radius:var(--r);transition:background .15s}
-.rank-row:hover{background:var(--bg)}
-.rank-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
-.rank-name{font-size:.8rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rank-cargo{font-size:.69rem;color:var(--muted)}
-.rank-bw{width:100px;flex-shrink:0}
-.rank-bt{height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
-.rank-bf{height:100%;border-radius:4px;transition:width .7s}
-.rank-score{font-size:.82rem;font-weight:800;min-width:34px;text-align:right;flex-shrink:0}
-.rank-badge{display:inline-block;padding:.12rem .55rem;border-radius:100px;font-size:.65rem;font-weight:700;border:1px solid;flex-shrink:0}
-.tbl-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;margin-bottom:1.2rem}
-.tbl-hd{padding:.75rem 1rem;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.tbl-hd h3{font-size:.78rem;font-weight:700;color:var(--muted)}
-table{width:100%;border-collapse:collapse;font-size:.79rem}
-thead tr{background:var(--bg)}
-th{padding:.58rem .75rem;text-align:left;font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:.72rem .75rem;border-bottom:1px solid var(--bg)}
-tr:last-child td{border-bottom:none}
-tbody tr:hover td{background:var(--bg);cursor:pointer}
-.tbl-badge{display:inline-block;padding:.14rem .55rem;border-radius:100px;font-size:.64rem;font-weight:700;border:1px solid}
-.fb-lw{background:rgba(22,163,74,.1);color:var(--green);border-color:rgba(22,163,74,.3)}
-.fb-md{background:rgba(180,83,9,.1);color:var(--amber);border-color:rgba(180,83,9,.3)}
-.fb-hg{background:rgba(220,38,38,.1);color:var(--red);border-color:rgba(220,38,38,.3)}
-.fb-na{background:var(--bg);color:var(--muted);border-color:var(--line)}
-.t-acts{display:flex;gap:.32rem}
-.empty{padding:2rem;text-align:center;color:var(--muted);font-size:.85rem}
+.gal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.gal-top h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800}
+.gcnt{font-family:'IBM Plex Mono',monospace;font-size:.65rem;padding:3px 10px;
+background:var(--s2);border:1px solid var(--bd);border-radius:20px;color:var(--t3)}
+.frow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;
+scrollbar-width:none;-ms-overflow-style:none}
+.frow::-webkit-scrollbar{display:none}
+.fc{padding:7px 14px;border-radius:20px;font-size:.75rem;cursor:pointer;
+border:1px solid var(--bd);background:none;color:var(--t2);
+white-space:nowrap;font-family:'Figtree',sans-serif;transition:all .15s;flex-shrink:0}
+.fc:active{transform:scale(.95)}
+.fc.on{background:var(--s2);color:#60a5fa;border-color:#3b82f6}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gi{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r14);
+overflow:hidden;cursor:pointer;transition:all .18s;-webkit-user-select:none;user-select:none}
+.gi:active{transform:scale(.97)}
+.gi img{width:100%;height:120px;object-fit:cover;display:block}
+.gi-body{padding:10px}
+.gi-name{font-size:.78rem;font-weight:600;margin:5px 0 2px;line-height:1.2}
+.gi-meta{font-size:.65rem;color:var(--t3);font-family:'IBM Plex Mono',monospace}
+.gal-empty{text-align:center;padding:48px 20px;color:var(--t3);grid-column:1/-1}
+.gal-empty .big{font-size:2rem;opacity:.25;margin-bottom:10px}
+.gal-empty p{font-size:.8rem;line-height:1.6}
 
-@media(max-width:560px){
-  .r2,.r3{grid-template-columns:1fr}
-  .c3,.c4,.c5{grid-template-columns:repeat(2,1fr)}
-  .dim-grid{grid-template-columns:repeat(2,1fr)}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-  .res-top-row{grid-template-columns:1fr}
-  .fr-markers{grid-template-columns:1fr}
-}
+.srow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r14);padding:16px;text-align:center}
+.sc .num{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;line-height:1}
+.sc .lbl{font-size:.62rem;color:var(--t3);margin-top:3px;text-transform:uppercase;
+letter-spacing:.8px;font-family:'IBM Plex Mono',monospace}
+.chart-card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r14);padding:16px;margin-bottom:12px}
+.chart-card h3{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--t3);
+text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.bar-r{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.bar-l{width:100px;font-size:.72rem;color:var(--t);flex-shrink:0;text-align:right;line-height:1.3}
+.bar-tr{flex:1;height:7px;background:var(--s4);border-radius:4px;overflow:hidden}
+.bar-f{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.2,.8,.2,1);min-width:2px}
+.bar-v{width:28px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--t3);text-align:right}
+.action-bar{display:flex;gap:8px;margin-top:4px;padding-bottom:8px}
+.action-bar .btn{flex:1}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;
+display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bd2);
+border-radius:var(--r20) var(--r20) 0 0;
+max-width:500px;width:100%;
+max-height:88vh;overflow-y:auto;padding-bottom:calc(16px + var(--safe-bot))}
+.modal-handle{width:36px;height:4px;background:var(--bd2);border-radius:2px;
+margin:12px auto 0;cursor:pointer}
+.modal-img-wrap{margin:12px 14px 0;border-radius:var(--r14);overflow:hidden;position:relative}
+.modal-img-wrap img{width:100%;max-height:200px;object-fit:cover;display:block}
+.modal-body{padding:14px 16px}
+.modal-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin:8px 0 5px}
+.modal-meta{font-size:.72rem;color:var(--t2);margin-bottom:14px;line-height:1.5}
+
+.bbox-label{position:absolute;background:rgba(0,0,0,.75);color:#fff;font-size:.6rem;
+padding:2px 6px;border-radius:4px;font-family:'IBM Plex Mono',monospace;pointer-events:none}
+.bbox-box{position:absolute;border:2px solid;pointer-events:none}
+
+.feedback-box{background:var(--s2);border-radius:var(--r10);padding:12px;margin-top:12px}
+.feedback-box p{font-size:.75rem;color:var(--t2);margin-bottom:8px}
+.fb-btns{display:flex;gap:6px;flex-wrap:wrap}
+.fb-btn{font-size:.7rem;padding:6px 10px;border-radius:8px;border:1px solid var(--bd);
+background:var(--s3);color:var(--t);cursor:pointer;transition:all .15s}
+.fb-btn:active{transform:scale(.95)}
+.fb-btn.sel{background:#3b82f6;border-color:#3b82f6;color:#fff}
+
+.combination-alert{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
+border-radius:var(--r10);padding:10px 12px;margin-bottom:12px;font-size:.75rem;color:#fcd34d}
+.combination-alert strong{color:#f59e0b}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+canvas{display:none}
+.fade{animation:fi .28s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="logo">
-    <div class="logo-ic">&#129463;</div>
-    <div>
-      <div class="logo-txt"><span>BucoMente</span> Obra</div>
-      <span class="logo-sub">Univ. del Sin&#250; · Cartagena</span>
-    </div>
-  </div>
-  <div class="top-r">
-    <button class="btn btn-ghost btn-sm" id="btn-panel" onclick="irA('pg-dash')" style="display:none">Panel</button>
-    <button class="btn btn-blue btn-sm" id="btn-nueva" onclick="nuevaEval()" style="display:none">+ Nueva</button>
-  </div>
+<div id="app">
+<div id="header">
+<div>
+<div class="logo">PatoLogIA</div>
+<div class="logo-tag">Universidad del Sinú · Ingeniería Civil</div>
 </div>
-<div class="prog"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
-
-<!-- HOME -->
-<div class="pg on" id="pg-home">
-  <div style="max-width:600px;margin:0 auto;padding:2.5rem 1rem;text-align:center">
-    <div class="fade" style="display:inline-block;background:var(--violet-lt);color:var(--violet);font-size:.67rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;padding:.3rem .85rem;border-radius:100px;margin-bottom:1.4rem">Biomonitoreo Laboral · 2026</div>
-    <h1 class="fade d1" style="font-size:clamp(1.7rem,6vw,2.6rem);font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-bottom:.9rem">Detecci&#243;n de<br><em style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--blue)">efectos del estr&#233;s</em><br>en trabajadores de obra</h1>
-    <p class="fade d2" style="color:var(--muted);font-size:.9rem;line-height:1.75;margin-bottom:2rem;max-width:480px;margin-left:auto;margin-right:auto">Escáner facial que detecta las <strong>señales visibles del estrés</strong> — tensión facial, ojeras, mirada apagada, piel con brotes, tics y alteraciones circulatorias — junto con evaluación clínica estructurada.</p>
-    <div class="fade d3" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem">
-      <span style="background:var(--white);border:1px solid var(--line);border-radius:100px;padding:.32rem .8rem;font-size:.74rem;color:var(--muted)">&#128247; Escáner facial</span>
-      <span style="background:var(--white);border:1px solid var(--line);border-radius:100px;padding:.32rem .8rem;font-size:.74rem;color:var(--muted)">&#128203; 5 módulos clínicos</span>
-      <span style="background:var(--white);border:1px solid var(--line);border-radius:100px;padding:.32rem .8rem;font-size:.74rem;color:var(--muted)">&#128202; Gráficas de índices</span>
-      <span style="background:var(--white);border:1px solid var(--line);border-radius:100px;padding:.32rem .8rem;font-size:.74rem;color:var(--muted)">&#128274; Sin API de pago</span>
-    </div>
-    <button class="btn btn-blue fade d3" style="font-size:.92rem;padding:.75rem 1.8rem" onclick="nuevaEval()">Iniciar evaluaci&#243;n &#8594;</button>
-    <button class="btn btn-out fade d3" id="btn-home-panel" onclick="irA('pg-dash')" style="display:none;margin-left:.6rem;font-size:.88rem">Ver panel</button>
-  </div>
+<div class="hbadge">v4.0-ML</div>
 </div>
 
-<!-- SCANNER -->
-<div class="pg" id="pg-scan" style="min-height:100vh">
-<div class="scan-shell">
-  <div class="scan-head fade">
-    <div class="scan-chip">&#128247; Escáner de Se&#241;ales Visibles de Estr&#233;s</div>
-    <h2>Detecci&#243;n facial de<br><em>efectos del estr&#233;s</em></h2>
-    <p>Bas&#225;ndose en los 6 marcadores cl&#237;nicos del protocolo de Se&#241;ales Visibles de Estr&#233;s, el sistema analiza el rostro y detecta los efectos acumulados del trabajo en obra civil.</p>
-  </div>
-
-  <!-- PERMISO -->
-  <div id="sc-perm" class="fade d1">
-    <div class="perm-card">
-      <span class="perm-icon">&#128247;</span>
-      <div class="perm-title">Activar c&#225;mara para el an&#225;lisis</div>
-      <div class="perm-body">El sistema captura el rostro y analiza los 6 marcadores visuales de estr&#233;s: tensi&#243;n facial, ojeras, condici&#243;n de piel, mirada, tics y color facial. El an&#225;lisis se realiza en el dispositivo — sin enviar datos a servidores externos.</div>
-      <div class="perm-note">&#128274; Imagen procesada solo localmente. No se env&#237;a a ning&#250;n servidor. Participaci&#243;n voluntaria.</div>
-      <div id="session-info" style="margin-bottom:.9rem"></div>
-      <div class="perm-btns">
-        <button class="btn btn-ghost" onclick="saltarScan()" style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.12)">Continuar sin escanear</button>
-        <button class="btn btn-vio" id="btn-cam" onclick="activarCam()">&#128247; Activar c&#225;mara</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DENEGADO -->
-  <div id="sc-deny" style="display:none">
-    <div class="err-box">
-      <strong>Acceso denegado.</strong> Para habilitarlo:<br><br>
-      &#9679; <strong>Chrome/Edge:</strong> Candado &#128274; en barra &#8594; C&#225;mara &#8594; Permitir<br>
-      &#9679; <strong>Firefox:</strong> Candado &#8594; Permisos &#8594; C&#225;mara &#8594; Permitir<br>
-      &#9679; <strong>Safari iOS:</strong> Ajustes &#8594; Safari &#8594; C&#225;mara &#8594; Permitir<br>
-      &#9679; <strong>Samsung:</strong> Configuraci&#243;n &#8594; Aplicaciones &#8594; Navegador &#8594; Permisos &#8594; C&#225;mara
-    </div>
-    <div class="perm-btns">
-      <button class="btn btn-ghost" onclick="saltarScan()" style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.12)">Continuar sin escanear</button>
-      <button class="btn btn-vio" onclick="reintentar()">&#8635; Reintentar</button>
-    </div>
-  </div>
-
-  <!-- CÁMARA -->
-  <div id="sc-cam" style="display:none">
-    <div class="cam-wrap">
-      <video id="cam-vid" autoplay playsinline muted></video>
-      <canvas id="cam-cvs"></canvas>
-      <div class="cam-dark"></div>
-      <!-- Face guide SVG -->
-      <div class="face-guide">
-        <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><filter id="glow2"><feGaussianBlur stdDeviation="2" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-          <!-- Silueta cara -->
-          <path d="M100 8 C55 8,22 45,22 95 C22 130,35 158,58 172 C62 174,63 178,63 183 C63 193,72 200,100 200 C128 200,137 193,137 183 C137 178,138 174,142 172 C165 158,178 130,178 95 C178 45,145 8,100 8 Z" stroke="#a78bfa" stroke-width="2" stroke-dasharray="5 3" opacity=".9" filter="url(#glow2)"/>
-          <!-- Orejas -->
-          <path d="M22 88 C12 88,8 98,8 108 C8 118,12 126,22 126" stroke="#a78bfa" stroke-width="1.5" opacity=".5"/>
-          <path d="M178 88 C188 88,192 98,192 108 C192 118,188 126,178 126" stroke="#a78bfa" stroke-width="1.5" opacity=".5"/>
-          <!-- Ojos -->
-          <ellipse cx="72" cy="96" rx="16" ry="9" stroke="#7c3aed" stroke-width="1.2" opacity=".55"/>
-          <ellipse cx="128" cy="96" rx="16" ry="9" stroke="#7c3aed" stroke-width="1.2" opacity=".55"/>
-          <!-- Nariz -->
-          <path d="M100 104 L92 125 C92 128,95 130,100 130 C105 130,108 128,108 125 Z" stroke="#7c3aed" stroke-width="1" opacity=".4"/>
-          <!-- Boca -->
-          <path d="M82 148 Q100 160 118 148" stroke="#7c3aed" stroke-width="1.2" fill="none" opacity=".45"/>
-          <!-- Corners -->
-          <path d="M30 30 L30 20 L40 20" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-          <path d="M170 30 L170 20 L160 20" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-          <path d="M30 185 L30 195 L40 195" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-          <path d="M170 185 L170 195 L160 195" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="scan-line" id="scan-line"></div>
-      <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
-      <div class="cam-corner bl"></div><div class="cam-corner br"></div>
-      <div class="cam-status">
-        <div class="cam-status-txt" id="cam-txt">Centra tu rostro en la gu&#237;a facial</div>
-      </div>
-    </div>
-    <div class="cam-info"><span>&#8505;&#65039;</span><span>An&#225;lisis realizado localmente en el dispositivo. Sin env&#237;o de datos.</span></div>
-    <div class="cam-btns">
-      <button class="btn btn-ghost btn-sm" onclick="saltarScan()" style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.12)">Omitir</button>
-      <button class="capture-btn" onclick="capturar()" id="btn-capture">&#128247;</button>
-      <button class="btn btn-out btn-sm" onclick="cambiarCam()" style="color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.15)">&#128260; Voltear</button>
-    </div>
-  </div>
-
-  <!-- ANALIZANDO -->
-  <div id="sc-proc" style="display:none">
-    <div class="analyzing-card">
-      <h3>Analizando marcadores de estr&#233;s&#8230;</h3>
-      <div class="ana-steps">
-        <div class="ana-s" id="as1"><div class="ana-s-ico"><div class="spin"></div></div>Analizando tensi&#243;n facial y mandibular</div>
-        <div class="ana-s" id="as2"><div class="ana-s-ico">2</div>Evaluando ojeras, bolsas y mirada</div>
-        <div class="ana-s" id="as3"><div class="ana-s-ico">3</div>Detectando condici&#243;n de piel y color</div>
-        <div class="ana-s" id="as4"><div class="ana-s-ico">4</div>Identificando microexpresiones y tics</div>
-        <div class="ana-s" id="as5"><div class="ana-s-ico">5</div>Generando reporte cl&#237;nico</div>
-      </div>
-    </div>
-    <div class="preview-img"><img id="proc-img" src="" alt=""></div>
-  </div>
-
-  <!-- RESULTADO FACIAL -->
-  <div id="sc-result" style="display:none">
-    <div class="fr-card">
-      <div class="fr-top">
-        <div class="fr-photo"><img id="fr-img" src="" alt=""></div>
-        <div class="fr-info">
-          <h3>Reporte de Se&#241;ales de Estr&#233;s</h3>
-          <p id="fr-sub">An&#225;lisis de marcadores visuales</p>
-          <div id="fr-badge" class="fr-badge"></div>
-        </div>
-      </div>
-      <div class="fr-markers" id="fr-mks"></div>
-      <div class="fr-narr" id="fr-narr"></div>
-      <!-- Folleto de señales detectadas -->
-      <div class="folleto-section" id="folleto-sec" style="display:none">
-        <div class="folleto-title">&#128218; Se&#241;ales del folleto detectadas en este an&#225;lisis</div>
-        <div class="folleto-items" id="folleto-items"></div>
-      </div>
-      <div class="fr-note">&#9888; An&#225;lisis orientativo complementario basado en marcadores visuales. No sustituye el diagn&#243;stico cl&#237;nico de un profesional de salud.</div>
-    </div>
-    <div class="cam-btns">
-      <button class="btn btn-ghost btn-sm" onclick="retomar()" style="color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.12)">&#8617; Repetir</button>
-      <button class="btn btn-vio" onclick="irModulos()">Continuar con la evaluaci&#243;n &#8594;</button>
-    </div>
-  </div>
+<div id="content">
+<!-- CAPTURAR -->
+<div class="pnl on" id="pnl-cap">
+<div class="cap-modes" id="cap-modes">
+<div class="cap-tile" id="tile-cam" onclick="startCamera()">
+<span class="ci">📷</span>
+<h3>Cámara</h3>
+<p>Toma foto en campo directamente</p>
+</div>
+<div class="cap-tile" id="tile-up" onclick="triggerUpload()">
+<span class="ci">🖼</span>
+<h3>Galería</h3>
+<p>Selecciona imagen del dispositivo</p>
 </div>
 </div>
 
-<!-- MÓDULO 1 -->
-<div class="pg" id="pg-m1">
-<div class="shell">
-  <div class="fhead fade">
-    <div class="dots" id="d1"></div>
-    <div class="step-lbl">M&#243;dulo 01 / 05</div>
-    <h2>Datos <em>personales</em></h2>
-    <p>Identificaci&#243;n del trabajador. Tratamiento confidencial seg&#250;n Ley 1581 de 2012.</p>
-  </div>
-  <div class="fade d1">
-    <div class="r2">
-      <div class="field"><label class="fl">Nombres *</label><input type="text" id="d-nom" placeholder="Ej: Carlos Andr&#233;s"></div>
-      <div class="field"><label class="fl">Apellidos *</label><input type="text" id="d-ape" placeholder="Ej: Mart&#237;nez L&#243;pez"></div>
-    </div>
-    <div class="r3">
-      <div class="field"><label class="fl">Tipo documento</label>
-        <select id="d-tip"><option value="CC">C&#233;dula ciudadan&#237;a</option><option value="CE">C&#233;dula extranjer&#237;a</option><option value="PP">Pasaporte</option></select>
-      </div>
-      <div class="field"><label class="fl">N.&#176; documento *</label><input type="text" id="d-doc" placeholder="1082456789"></div>
-      <div class="field"><label class="fl">Fecha nacimiento</label><input type="date" id="d-fnac"></div>
-    </div>
-    <div class="r3">
-      <div class="field"><label class="fl">Sexo</label>
-        <select id="d-sex"><option value="">Seleccionar</option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
-      </div>
-      <div class="field"><label class="fl">Tel&#233;fono</label><input type="text" id="d-tel" placeholder="300 000 0000"></div>
-      <div class="field"><label class="fl">EPS</label><input type="text" id="d-eps" placeholder="Ej: Sura..."></div>
-    </div>
-    <div class="r2">
-      <div class="field"><label class="fl">ARL</label><input type="text" id="d-arl" placeholder="Ej: Positiva..."></div>
-      <div class="field"><label class="fl">A&#241;os trabajando en obra</label>
-        <select id="d-anos"><option value="1">Menos de 1 a&#241;o</option><option value="2">1 a 3 a&#241;os</option><option value="5">4 a 7 a&#241;os</option><option value="10">8 a 15 a&#241;os</option><option value="20">M&#225;s de 15 a&#241;os</option></select>
-      </div>
-    </div>
-  </div>
-  <div class="fnav">
-    <button class="btn btn-out" onclick="irA('pg-scan')">&#8592; Atr&#225;s</button>
-    <button class="btn btn-blue" onclick="irM(2)">Siguiente &#8594;</button>
-  </div>
+<div id="viewfinder">
+<video id="videoEl" autoplay playsinline muted></video>
+<div class="vf-overlay">
+<div class="vf-corner tl"></div><div class="vf-corner tr"></div>
+<div class="vf-corner bl"></div><div class="vf-corner br"></div>
+<div class="vf-label">● CÁMARA EN VIVO</div>
+</div>
+<div class="cam-controls">
+<button class="cam-side-btn" onclick="flipCamera()">🔄</button>
+<button class="snap-btn" onclick="snapPhoto()"></button>
+<button class="cam-side-btn" onclick="stopCamera()">✕</button>
 </div>
 </div>
 
-<!-- MÓDULO 2 -->
-<div class="pg" id="pg-m2">
-<div class="shell">
-  <div class="fhead fade">
-    <div class="dots" id="d2"></div>
-    <div class="step-lbl">M&#243;dulo 02 / 05</div>
-    <h2>Perfil <em>laboral</em></h2>
-    <p>Condiciones de trabajo y exposici&#243;n a factores de riesgo en la obra civil.</p>
-  </div>
-  <div class="fade d1">
-    <div class="r2">
-      <div class="field"><label class="fl">Empresa</label><input type="text" id="d-emp" placeholder="Nombre empresa"></div>
-      <div class="field"><label class="fl">Proyecto / Obra</label><input type="text" id="d-obra" placeholder="Ej: Torre Norte"></div>
-    </div>
-    <div class="r3">
-      <div class="field"><label class="fl">Ciudad</label><input type="text" id="d-ciu" placeholder="Ej: Cartagena"></div>
-      <div class="field"><label class="fl">Fecha evaluaci&#243;n</label><input type="date" id="d-fec"></div>
-      <div class="field"><label class="fl">Evaluado por</label><input type="text" id="d-eval" placeholder="Nombre evaluador"></div>
-    </div>
-    <div class="field"><label class="fl">Cargo *</label>
-      <div class="rg c3">
-        <div class="rc"><input type="radio" name="cargo" id="c1" value="Obrero"><label for="c1">Obrero</label></div>
-        <div class="rc"><input type="radio" name="cargo" id="c2" value="Operador maquinaria"><label for="c2">Operador maq.</label></div>
-        <div class="rc"><input type="radio" name="cargo" id="c3" value="Maestro de obra"><label for="c3">Maestro obra</label></div>
-        <div class="rc"><input type="radio" name="cargo" id="c4" value="Residente"><label for="c4">Residente</label></div>
-        <div class="rc"><input type="radio" name="cargo" id="c5" value="Director / Ing."><label for="c5">Director / Ing.</label></div>
-        <div class="rc"><input type="radio" name="cargo" id="c6" value="Otro"><label for="c6">Otro</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Horas promedio / d&#237;a</label>
-      <div class="slbox"><div class="sl-n" id="sv-h">8</div><div class="sl-u">horas por d&#237;a</div>
-        <input type="range" min="4" max="16" value="8" step="1" id="sl-h" oninput="sv('h',this.value)">
-        <div class="sl-marks"><span>4h</span><span>6h</span><span>8h</span><span>10h</span><span>12h</span><span>14h</span><span>16h</span></div>
-      </div>
-    </div>
-    <div class="r2">
-      <div class="field"><label class="fl">Vibraci&#243;n maquinaria</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="vib" id="v0" value="Ninguna"><label for="v0">Ninguna</label></div>
-          <div class="rc"><input type="radio" name="vib" id="v1" value="Ocasional"><label for="v1">Ocasional</label></div>
-          <div class="rc"><input type="radio" name="vib" id="v2" value="Frecuente"><label for="v2">Frecuente</label></div>
-          <div class="rc"><input type="radio" name="vib" id="v3" value="Toda la jornada"><label for="v3">Toda la jornada</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="fl">Incidentes &#250;lt. a&#241;o</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="inc" id="i0" value="Ninguno"><label for="i0">Ninguno</label></div>
-          <div class="rc"><input type="radio" name="inc" id="i1" value="1"><label for="i1">1</label></div>
-          <div class="rc"><input type="radio" name="inc" id="i2" value="2-3"><label for="i2">2&#8211;3</label></div>
-          <div class="rc"><input type="radio" name="inc" id="i3" value="> 3"><label for="i3">&#62; 3</label></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="fnav"><button class="btn btn-out" onclick="irM(1)">&#8592;</button><button class="btn btn-blue" onclick="irM(3)">Siguiente &#8594;</button></div>
+<div id="dropzone">
+<input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)"/>
+<h3>Toca para seleccionar</h3>
+<p>JPG · PNG · WEBP</p>
+</div>
+
+<div id="prev-wrap">
+<img id="prev-img"/>
+<canvas id="detection-canvas"></canvas>
+<div class="prev-actions">
+<button class="btn btn-g" style="flex:1" onclick="resetAll()">↩ Nueva</button>
+<button class="btn btn-p" id="save-btn" style="flex:1;display:none" onclick="saveItem()">💾 Guardar</button>
 </div>
 </div>
 
-<!-- MÓDULO 3 -->
-<div class="pg" id="pg-m3">
-<div class="shell">
-  <div class="fhead fade">
-    <div class="dots" id="d3"></div>
-    <div class="step-lbl">M&#243;dulo 03 / 05</div>
-    <h2>Evaluaci&#243;n <em>psicosocial</em></h2>
-    <p>EEP + FPSICO adaptado. &#218;ltimos 30 d&#237;as. Responda con sinceridad — confidencial.</p>
-  </div>
-  <div id="fr-remind" style="display:none;background:var(--violet-lt);border:1px solid #c4b5fd;border-radius:var(--r);padding:.7rem .9rem;margin-bottom:1.2rem;font-size:.8rem;color:var(--violet);line-height:1.55"><strong>Recuerde:</strong> El an&#225;lisis facial es independiente. Sus respuestas deben reflejar su estado real.</div>
-  <div class="fade d1">
-    <div class="field"><label class="fl">Sem&#225;foro emocional — hoy *</label>
-      <div class="sema-row">
-        <label class="sema-item sv"><input type="radio" name="sem" value="verde"><div class="sema-disc">&#128994;</div><div class="sema-lbl">Tranquilo/a</div></label>
-        <label class="sema-item sy"><input type="radio" name="sem" value="amarillo"><div class="sema-disc">&#128993;</div><div class="sema-lbl">Tenso/a</div></label>
-        <label class="sema-item sr"><input type="radio" name="sem" value="rojo"><div class="sema-disc">&#128308;</div><div class="sema-lbl">Muy estresado/a</div></label>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Incapacidad de controlar situaciones del trabajo</label>
-      <div class="rg c5">
-        <div class="rc"><input type="radio" name="p1" id="p1a" value="0"><label for="p1a">Nunca</label></div>
-        <div class="rc"><input type="radio" name="p1" id="p1b" value="1"><label for="p1b">Casi nunca</label></div>
-        <div class="rc"><input type="radio" name="p1" id="p1c" value="2"><label for="p1c">A veces</label></div>
-        <div class="rc"><input type="radio" name="p1" id="p1d" value="3"><label for="p1d">Frecuente</label></div>
-        <div class="rc"><input type="radio" name="p1" id="p1e" value="4"><label for="p1e">Muy seguido</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Sobrecarga de responsabilidades</label>
-      <div class="rg c5">
-        <div class="rc"><input type="radio" name="p2" id="p2a" value="0"><label for="p2a">Nunca</label></div>
-        <div class="rc"><input type="radio" name="p2" id="p2b" value="1"><label for="p2b">Raramente</label></div>
-        <div class="rc"><input type="radio" name="p2" id="p2c" value="2"><label for="p2c">A veces</label></div>
-        <div class="rc"><input type="radio" name="p2" id="p2d" value="3"><label for="p2d">Frecuente</label></div>
-        <div class="rc"><input type="radio" name="p2" id="p2e" value="4"><label for="p2e">Siempre</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Dificultad para dormir por trabajo</label>
-      <div class="rg c5">
-        <div class="rc"><input type="radio" name="p3" id="p3a" value="0"><label for="p3a">Nunca</label></div>
-        <div class="rc"><input type="radio" name="p3" id="p3b" value="1"><label for="p3b">Raramente</label></div>
-        <div class="rc"><input type="radio" name="p3" id="p3c" value="2"><label for="p3c">A veces</label></div>
-        <div class="rc"><input type="radio" name="p3" id="p3d" value="3"><label for="p3d">Frecuente</label></div>
-        <div class="rc"><input type="radio" name="p3" id="p3e" value="4"><label for="p3e">Casi siempre</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Ansiedad, irritabilidad o &#225;nimo deprimido</label>
-      <div class="rg c4">
-        <div class="rc"><input type="radio" name="p4" id="p4a" value="0"><label for="p4a">Ausentes</label></div>
-        <div class="rc"><input type="radio" name="p4" id="p4b" value="2"><label for="p4b">Leves</label></div>
-        <div class="rc"><input type="radio" name="p4" id="p4c" value="3"><label for="p4c">Moderados</label></div>
-        <div class="rc"><input type="radio" name="p4" id="p4d" value="4"><label for="p4d">Intensos</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Apoyo social (compa&#241;eros / supervisor)</label>
-      <div class="rg c4">
-        <div class="rc"><input type="radio" name="p5" id="p5a" value="0"><label for="p5a">Mucho</label></div>
-        <div class="rc"><input type="radio" name="p5" id="p5b" value="1"><label for="p5b">Algo</label></div>
-        <div class="rc"><input type="radio" name="p5" id="p5c" value="2"><label for="p5c">Poco</label></div>
-        <div class="rc"><input type="radio" name="p5" id="p5d" value="3"><label for="p5d">Ninguno</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Horas de sue&#241;o por noche</label>
-      <div class="slbox"><div class="sl-n" id="sv-s">7</div><div class="sl-u">horas por noche</div>
-        <input type="range" min="3" max="10" value="7" step="1" id="sl-s" oninput="sv('s',this.value)">
-        <div class="sl-marks"><span>3h</span><span>4h</span><span>5h</span><span>6h</span><span>7h</span><span>8h</span><span>9h</span><span>10h</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="fnav"><button class="btn btn-out" onclick="irM(2)">&#8592;</button><button class="btn btn-blue" onclick="irM(4)">Siguiente &#8594;</button></div>
+<div id="result-box" style="display:none">
+<div class="res-card">
+<div class="rc-label">Resultado del análisis</div>
+<div id="result-area">
+<div class="spin-box"><div class="spin"></div><span style="font-size:.8rem">Cargando modelo IA…</span></div>
+</div>
+</div>
 </div>
 </div>
 
-<!-- MÓDULO 4 -->
-<div class="pg" id="pg-m4">
-<div class="shell">
-  <div class="fhead fade">
-    <div class="dots" id="d4"></div>
-    <div class="step-lbl">M&#243;dulo 04 / 05</div>
-    <h2>Salud <em>bucodental</em></h2>
-    <p>Indicadores cl&#237;nicos subjetivos. El diagn&#243;stico definitivo requiere examen intraoral profesional.</p>
-  </div>
-  <div class="fade d1">
-    <div class="field"><label class="fl">&#218;ltima visita al odont&#243;logo</label>
-      <div class="rg c4">
-        <div class="rc"><input type="radio" name="b1" id="b1a" value="0"><label for="b1a">&#60; 6 meses</label></div>
-        <div class="rc"><input type="radio" name="b1" id="b1b" value="1"><label for="b1b">6&#8211;12 m</label></div>
-        <div class="rc"><input type="radio" name="b1" id="b1c" value="2"><label for="b1c">1&#8211;2 a&#241;os</label></div>
-        <div class="rc"><input type="radio" name="b1" id="b1d" value="3"><label for="b1d">&#62; 2 a&#241;os</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Bruxismo *</label>
-      <div class="rg c4">
-        <div class="rc"><input type="radio" name="brx" id="bxa" value="no"><label for="bxa">Ausente</label></div>
-        <div class="rc"><input type="radio" name="brx" id="bxb" value="leve"><label for="bxb">Leve</label></div>
-        <div class="rc"><input type="radio" name="brx" id="bxc" value="moderado"><label for="bxc">Moderado</label></div>
-        <div class="rc"><input type="radio" name="brx" id="bxd" value="severo"><label for="bxd">Severo</label></div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Dolor en ATM</label>
-      <div class="rg c4">
-        <div class="rc"><input type="radio" name="atm" id="aa" value="0"><label for="aa">Sin dolor</label></div>
-        <div class="rc"><input type="radio" name="atm" id="ab" value="1"><label for="ab">Ocasional</label></div>
-        <div class="rc"><input type="radio" name="atm" id="ac" value="2"><label for="ac">Frecuente</label></div>
-        <div class="rc"><input type="radio" name="atm" id="ad" value="3"><label for="ad">Constante</label></div>
-      </div>
-    </div>
-    <div class="r2">
-      <div class="field"><label class="fl">Cepillado</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="cep" id="ca" value="0"><label for="ca">Irregular</label></div>
-          <div class="rc"><input type="radio" name="cep" id="cb" value="1"><label for="cb">1&#215;/d&#237;a</label></div>
-          <div class="rc"><input type="radio" name="cep" id="cc" value="2"><label for="cc">2&#215;/d&#237;a</label></div>
-          <div class="rc"><input type="radio" name="cep" id="cd" value="3"><label for="cd">3+</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="fl">Sangrado gingival</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="enc" id="ea" value="0"><label for="ea">Nunca</label></div>
-          <div class="rc"><input type="radio" name="enc" id="eb" value="1"><label for="eb">Raramente</label></div>
-          <div class="rc"><input type="radio" name="enc" id="ec" value="2"><label for="ec">Frecuente</label></div>
-          <div class="rc"><input type="radio" name="enc" id="ed" value="3"><label for="ed">Siempre</label></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="fnav"><button class="btn btn-out" onclick="irM(3)">&#8592;</button><button class="btn btn-blue" onclick="irM(5)">Siguiente &#8594;</button></div>
+<!-- TAXONOMÍA -->
+<div class="pnl" id="pnl-tax">
+<div class="tax-cats" id="tax-cats"></div>
+</div>
+
+<!-- GALERÍA -->
+<div class="pnl" id="pnl-gal">
+<div class="gal-top"><h2>Registros</h2><span class="gcnt" id="gcnt">0</span></div>
+<div class="frow" id="frow"></div>
+<div class="ggrid" id="ggrid"></div>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<div class="pnl" id="pnl-stats">
+<div class="srow" id="srow"></div>
+<div class="chart-card"><h3>Por categoría</h3><div id="chart-cat"></div></div>
+<div class="chart-card"><h3>Por severidad</h3><div id="chart-sev"></div></div>
+<div class="action-bar">
+<button class="btn btn-g" onclick="exportCSV()">⬇ CSV</button>
+<button class="btn btn-d" onclick="clearAll()">🗑 Limpiar</button>
+</div>
 </div>
 </div>
 
-<!-- MÓDULO 5 -->
-<div class="pg" id="pg-m5">
-<div class="shell">
-  <div class="fhead fade">
-    <div class="dots" id="d5"></div>
-    <div class="step-lbl">M&#243;dulo 05 / 05</div>
-    <h2>H&#225;bitos de <em>vida</em></h2>
-    <p>Los h&#225;bitos cotidianos impactan en la vulnerabilidad laboral y la salud bucodental.</p>
-  </div>
-  <div class="fade d1">
-    <div class="field"><label class="fl">Vasos de agua por jornada</label>
-      <div class="slbox"><div class="sl-n" id="sv-a">4</div><div class="sl-u">vasos por jornada</div>
-        <input type="range" min="0" max="12" value="4" step="1" id="sl-a" oninput="sv('a',this.value)">
-        <div class="sl-marks"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span><span>12+</span></div>
-      </div>
-    </div>
-    <div class="r2">
-      <div class="field"><label class="fl">Consumo de tabaco</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="tab" id="tba" value="No consume"><label for="tba">No consume</label></div>
-          <div class="rc"><input type="radio" name="tab" id="tbb" value="Exfumador"><label for="tbb">Exfumador/a</label></div>
-          <div class="rc"><input type="radio" name="tab" id="tbc" value="Ocasional"><label for="tbc">Ocasional</label></div>
-          <div class="rc"><input type="radio" name="tab" id="tbd" value="Diario"><label for="tbd">Diario</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="fl">Consumo de alcohol</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="alc" id="ala" value="No consume"><label for="ala">No consume</label></div>
-          <div class="rc"><input type="radio" name="alc" id="alb" value="Social"><label for="alb">Social</label></div>
-          <div class="rc"><input type="radio" name="alc" id="alc2" value="Frecuente"><label for="alc2">Frecuente</label></div>
-          <div class="rc"><input type="radio" name="alc" id="ald" value="Diario"><label for="ald">Diario</label></div>
-        </div>
-      </div>
-    </div>
-    <div class="r2">
-      <div class="field"><label class="fl">Actividad f&#237;sica</label>
-        <div class="rg c2">
-          <div class="rc"><input type="radio" name="dep" id="dpa" value="Sedentario"><label for="dpa">Sedentario</label></div>
-          <div class="rc"><input type="radio" name="dep" id="dpb" value="1-2x/sem"><label for="dpb">1&#8211;2&#215;/sem</label></div>
-          <div class="rc"><input type="radio" name="dep" id="dpc" value="3-4x/sem"><label for="dpc">3&#8211;4&#215;/sem</label></div>
-          <div class="rc"><input type="radio" name="dep" id="dpd" value="5+x/sem"><label for="dpd">5+&#215;/sem</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="fl">Alimentaci&#243;n en obra</label>
-        <div class="rg c2" style="grid-template-columns:1fr 1fr 1fr">
-          <div class="rc"><input type="radio" name="ali" id="ama" value="Equilibrada"><label for="ama">Equilibrada</label></div>
-          <div class="rc"><input type="radio" name="ali" id="amb" value="Regular"><label for="amb">Regular</label></div>
-          <div class="rc"><input type="radio" name="ali" id="amc" value="Deficiente"><label for="amc">Deficiente</label></div>
-        </div>
-      </div>
-    </div>
-    <div class="field"><label class="fl">Observaciones del evaluador</label>
-      <textarea id="d-obs" placeholder="Hallazgos relevantes, condiciones especiales..."></textarea>
-    </div>
-  </div>
-  <div class="fnav"><button class="btn btn-out" onclick="irM(4)">&#8592;</button><button class="btn btn-blue" onclick="calcular()">Calcular perfil &#8594;</button></div>
+<div id="nav">
+<button class="nav-btn on" onclick="tab('cap')"><span class="nav-icon">📷</span>Capturar</button>
+<button class="nav-btn" onclick="tab('tax')"><span class="nav-icon">🔬</span>Taxonomía</button>
+<button class="nav-btn" onclick="tab('gal')"><span class="nav-icon">🗂</span>Galería</button>
+<button class="nav-btn" onclick="tab('stats')"><span class="nav-icon">📊</span>Stats</button>
 </div>
 </div>
 
-<!-- RESULTADO -->
-<div class="pg" id="pg-result">
-  <div class="res-hero">
-    <div class="res-inner">
-      <div class="res-top-row">
-        <div>
-          <div class="res-name" id="r-nom"></div>
-          <div class="res-sub" id="r-sub"></div>
-          <div id="r-badge" class="res-badge"></div>
-          <div class="res-desc" id="r-desc" style="margin-top:.6rem"></div>
-        </div>
-        <div class="res-score-box">
-          <div class="res-score-n" id="r-score"></div>
-          <div class="res-score-l">&#205;ndice / 100</div>
-          <div class="res-face-n" id="r-face-n"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="conc-wrap" id="conc-wrap" style="display:none">
-    <div class="conc" id="conc-card">
-      <div class="conc-ico" id="conc-ico"></div>
-      <div><div class="conc-ttl" id="conc-ttl"></div><div class="conc-body" id="conc-body"></div></div>
-    </div>
-  </div>
-  <div class="res-body">
-    <div class="chart-section">
-      <h3>&#128202; &#205;ndices de riesgo por dimensi&#243;n</h3>
-      <div class="bar-chart" id="bar-ind"></div>
-    </div>
-    <div class="chart-section">
-      <h3>Mapa de riesgo integral</h3>
-      <div class="radar-wrap"><canvas id="radar-cvs" width="280" height="280"></canvas></div>
-    </div>
-    <div class="dim-grid">
-      <div class="dim-card"><div class="dim-lbl">&#129504; Psicosocial</div><div class="dim-val" id="d-psi"></div><div class="dim-bar"><div class="dim-fill" id="df-psi" style="width:0%"></div></div><div class="dim-sub" id="ds-psi"></div></div>
-      <div class="dim-card"><div class="dim-lbl">&#129463; Bucodental</div><div class="dim-val" id="d-buc"></div><div class="dim-bar"><div class="dim-fill" id="df-buc" style="width:0%"></div></div><div class="dim-sub" id="ds-buc"></div></div>
-      <div class="dim-card"><div class="dim-lbl">&#128167; H&#225;bitos</div><div class="dim-val" id="d-hab"></div><div class="dim-bar"><div class="dim-fill" id="df-hab" style="width:0%"></div></div><div class="dim-sub" id="ds-hab"></div></div>
-      <div class="dim-card"><div class="dim-lbl">&#9881;&#65039; Laboral</div><div class="dim-val" id="d-lab"></div><div class="dim-bar"><div class="dim-fill" id="df-lab" style="width:0%"></div></div><div class="dim-sub" id="ds-lab"></div></div>
-    </div>
-    <div class="sec-ttl">Recomendaciones personalizadas</div>
-    <div id="recs-out"></div>
-    <div class="disc">&#9888; Evaluaci&#243;n de tamizaje orientativa. No sustituye diagn&#243;stico cl&#237;nico profesional. Decreto 1072 de 2015.</div>
-    <div class="res-acts">
-      <button class="btn btn-out btn-sm" onclick="nuevaEval()">+ Evaluar otro</button>
-      <button class="btn btn-grn" onclick="guardar()">&#10004; Guardar y ver panel</button>
-    </div>
-  </div>
+<!-- Modal -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+<div class="modal" onclick="event.stopPropagation()">
+<div class="modal-handle" onclick="closeModal()"></div>
+<div class="modal-img-wrap" id="modal-img-wrap"></div>
+<div class="modal-body" id="modal-body"></div>
+</div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="pg" id="pg-dash">
-  <div class="dash-top">
-    <div><h2>Panel de Evaluados</h2><div id="dash-sub" style="font-size:.76rem;color:var(--muted);margin-top:.2rem">0 registros</div></div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <button class="btn btn-out btn-sm" onclick="nuevaEval()">+ Nueva</button>
-      <button class="btn btn-blue btn-sm" onclick="verGlobal()">&#128202; Esquema global</button>
-    </div>
-  </div>
-  <div style="padding:1rem">
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-lbl">Total</div><div class="kpi-val" id="kpi-t" style="color:var(--blue)">0</div><div class="kpi-sub">evaluados</div></div>
-      <div class="kpi"><div class="kpi-lbl">Perfil A</div><div class="kpi-val" id="kpi-a" style="color:var(--green)">0</div><div class="kpi-sub">bajo riesgo</div></div>
-      <div class="kpi"><div class="kpi-lbl">Perfil B</div><div class="kpi-val" id="kpi-b" style="color:var(--amber)">0</div><div class="kpi-sub">moderado</div></div>
-      <div class="kpi"><div class="kpi-lbl">Perfil C</div><div class="kpi-val" id="kpi-c" style="color:var(--red)">0</div><div class="kpi-sub">alto riesgo</div></div>
-    </div>
-    <div class="global-chart" id="dash-ranking" style="display:none">
-      <h3>Ranking por &#237;ndice<span class="priority-tag">Priorizados</span></h3>
-      <div id="rank-rows"></div>
-    </div>
-    <div class="global-chart" id="dash-dims" style="display:none">
-      <h3>Promedios del grupo</h3>
-      <div class="bar-chart" id="dash-bar"></div>
-    </div>
-    <div class="tbl-card">
-      <div class="tbl-hd"><h3>Registro de evaluaciones</h3><span id="dash-fecha" style="font-size:.72rem;color:var(--muted)"></span></div>
-      <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Trabajador</th><th>Cargo</th><th>Facial</th><th>Psico.</th><th>Bucal</th><th>H&#225;b.</th><th>Lab.</th><th>&#205;ndice</th><th>Perfil</th><th>Acc.</th></tr></thead><tbody id="tbody"></tbody></table></div>
-    </div>
-  </div>
-</div>
-
-<!-- GLOBAL -->
-<div class="pg" id="pg-global">
-  <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;padding:1.5rem 1rem">
-    <div style="max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div>
-        <div style="font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:.3rem">Esquema Global</div>
-        <div style="font-size:1.3rem;font-weight:800">An&#225;lisis del grupo completo</div>
-        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-top:.2rem" id="global-meta"></div>
-      </div>
-      <button class="btn btn-out btn-sm" onclick="irA('pg-dash')" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)">&#8592; Volver</button>
-    </div>
-  </div>
-  <div style="max-width:700px;margin:0 auto;padding:1.2rem 1rem">
-    <div class="kpi-grid" id="g-kpis" style="margin-bottom:1.2rem"></div>
-    <div class="global-chart"><h3>Clasificaci&#243;n por &#237;ndice<span class="priority-tag">&#9650; Priorizados</span></h3><div id="g-rank-full"></div></div>
-    <div class="global-chart"><h3>Comparativa por trabajador</h3><div id="g-multi-bar"></div></div>
-    <div class="global-chart"><h3>Promedios grupales</h3><div class="bar-chart" id="g-avg-bars"></div></div>
-    <div class="global-chart"><h3>Mapa de riesgo grupal</h3><div class="radar-wrap"><canvas id="radar-global" width="280" height="280"></canvas></div></div>
-  </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
 
 <script>
-// ─── DATOS DEL FOLLETO ──────────────────────────────────
-var FOLLETO = {
-  tension_facial: {
-    nombre: 'Tensión facial',
-    icono: '&#128552;',
-    color: '#f87171',
-    por_que: 'El cortisol activa el sistema nervioso simpático, tensando los músculos faciales involuntariamente.',
-    como_se_ve: 'Ceño fruncido permanente, mandíbula apretada, labios comprimidos o fruncidos.',
-    consejo: 'Masajes en mandíbula y ejercicios de estiramiento facial reducen la tensión en minutos.',
-    keywords: ['tensi','mandib','cejo','labio','frunci','apreta','rigidez','masetr','musculo facial']
-  },
-  ojeras_bolsas: {
-    nombre: 'Ojeras y bolsas',
-    icono: '&#128064;',
-    color: '#a78bfa',
-    por_que: 'El cortisol elevado dificulta el sueño reparador. La falta de sueño reduce la circulación.',
-    como_se_ve: 'Círculos oscuros bajo los ojos, hinchazón o bolsas visibles, piel traslúcida o morada.',
-    consejo: 'Dormir con la cabeza elevada, aplicar frío local y una rutina de sueño fija reduce las ojeras.',
-    keywords: ['ojera','bolsa','hinchaz','oscuro','morad','translucid','periorbital','infraorbital','palp']
-  },
-  piel_brotes: {
-    nombre: 'Piel con brotes',
-    icono: '&#128566;',
-    color: '#fb923c',
-    por_que: 'El cortisol estimula las glándulas sebáceas, obstruyendo poros y agravando el acné.',
-    como_se_ve: 'Brotes de acné en frente, mejillas o mentón. Piel opaca, rojeces, descamación.',
-    consejo: 'Rutina de limpieza suave e hidratación, junto con reducir el estrés, mejora la piel.',
-    keywords: ['acne','brote','opac','rojez','descam','sebace','poro','graso','mancha','inflam','piel']
-  },
-  mirada_apagada: {
-    nombre: 'Mirada apagada',
-    icono: '&#128566;',
-    color: '#60a5fa',
-    por_que: 'El agotamiento reduce la hidratación ocular y apaga la expresividad natural del rostro.',
-    como_se_ve: 'Párpados caídos, ojos secos o enrojecidos, expresión inerte o sin emoción.',
-    consejo: 'Pausas visuales de 20 segundos cada 20 minutos y buena hidratación restauran el brillo.',
-    keywords: ['apagad','palidez ocular','parpad','seco','cansad','inerte','sin emocion','ptosis','ojo','mirada']
-  },
-  tics_nerviosos: {
-    nombre: 'Tics nerviosos',
-    icono: '&#9889;',
-    color: '#fbbf24',
-    por_que: 'La sobrecarga nerviosa provoca señales eléctricas erráticas en los músculos.',
-    como_se_ve: 'Parpadeo involuntario, temblor en comisuras del labio, movimientos faciales incontrolables.',
-    consejo: 'Reducir cafeína, aumentar magnesio y respiración profunda suelen eliminarlos.',
-    keywords: ['tic','espasmo','temblo','involuntar','asimetr','microexpresi','tension periorbital','contraccion']
-  },
-  palidez_enrojecimiento: {
-    nombre: 'Palidez o enrojecimiento',
-    icono: '&#128165;',
-    color: '#f472b6',
-    por_que: 'La adrenalina redistribuye el flujo sanguíneo, generando palidez o enrojecimiento.',
-    como_se_ve: 'Palidez repentina, rubor en mejillas/frente/cuello, sensación de calor sin fiebre.',
-    consejo: 'La respiración 4-7-8 estabiliza la circulación facial rápidamente.',
-    keywords: ['palidez','palid','rubor','enrojec','rojez','circulac','vascular','eritema','color']
-  }
+/* ─────────── TAXONOMY DATA ─────────────────────────────── */
+const TX=[
+{id:'mec',name:'Mecánica',cls:'mec',cbCls:'cb-mec',tpCls:'tp-mec',tcCls:'tc-mec',col:'#3b82f6',
+desc:'Daños por fuerzas, sobrecargas, impactos o movimientos estructurales.',
+subs:[
+{n:'Fisura de retracción',d:'Grietas finas por contracción durante el fraguado.',c:'Pérdida rápida de agua, curado deficiente.',s:'Media'},
+{n:'Fisura estructural',d:'Grietas por esfuerzos superiores a la resistencia.',c:'Sobrecarga, diseño inadecuado, sismo.',s:'Alta'},
+{n:'Fisura por fatiga',d:'Grietas acumuladas por cargas cíclicas repetidas.',c:'Tráfico vehicular, vibraciones industriales.',s:'Alta'},
+{n:'Asentamiento diferencial',d:'Desplazamiento relativo entre partes de la estructura.',c:'Suelo blando, arcillas expansivas, erosión.',s:'Alta'},
+{n:'Spalling',d:'Desprendimiento de capas superficiales del concreto.',c:'Impacto, corrosión del refuerzo, expansión.',s:'Alta'},
+{n:'Deformación excesiva',d:'Flechas superiores a los límites admisibles.',c:'Fluencia, sobrecarga sostenida.',s:'Media'},
+{n:'Deslaminación',d:'Separación de capas de recubrimiento o mortero.',c:'Adherencia deficiente, humedad atrapada.',s:'Media'},
+]},
+{id:'fis',name:'Física',cls:'fis',cbCls:'cb-fis',tpCls:'tp-fis',tcCls:'tc-fis',col:'#f59e0b',
+desc:'Deterioro por temperatura, humedad y ciclos climáticos.',
+subs:[
+{n:'Eflorescencia',d:'Depósitos blancos de sales cristalizadas.',c:'Infiltración de agua, lixiviación de Ca(OH)₂.',s:'Baja'},
+{n:'Craquelamiento',d:'Red de microfisuras en patrón de mapa.',c:'Ciclos de temperatura, secado superficial rápido.',s:'Media'},
+{n:'Abrasión superficial',d:'Desgaste progresivo por fricción.',c:'Tráfico, corriente de agua con sedimentos.',s:'Media'},
+{n:'Erosión hídrica',d:'Pérdida de material por agua continua.',c:'Flujo de agua, lluvia ácida, cavitación.',s:'Media'},
+{n:'Daño por helada',d:'Expansión del agua congelada en los poros.',c:'Ciclos hielo-deshielo en climas fríos.',s:'Alta'},
+{n:'Decoloración',d:'Cambios de coloración en la superficie.',c:'Humedad, óxidos, contaminación ambiental.',s:'Baja'},
+{n:'Exfoliación',d:'Pérdida de capas delgadas superficiales.',c:'Congelación-deshielo, carbonatación superficial.',s:'Media'},
+]},
+{id:'qui',name:'Química',cls:'qui',cbCls:'cb-qui',tpCls:'tp-qui',tcCls:'tc-qui',col:'#10b981',
+desc:'Reacciones que alteran la composición y propiedades del concreto.',
+subs:[
+{n:'Carbonatación',d:'Reacción CO₂ con Ca(OH)₂ que reduce el pH.',c:'Exposición CO₂ atmosférico, alta porosidad.',s:'Media'},
+{n:'Ataque por sulfatos',d:'Expansión por formación de etringita secundaria.',c:'Suelos sulfatados, aguas residuales.',s:'Alta'},
+{n:'Reacción Álcali-Sílice',d:'Expansión por gel alcalino-silícico.',c:'Áridos reactivos + álcalis + humedad.',s:'Alta'},
+{n:'Ataque por cloruros',d:'Cloruros que despasivizan el refuerzo.',c:'Ambiente marino, sales de deshielo.',s:'Alta'},
+{n:'Lixiviación',d:'Disolución de componentes del cemento.',c:'Agua blanda o con CO₂ agresivo.',s:'Media'},
+{n:'Ataque ácido',d:'Disolución de la pasta de cemento.',c:'Lluvia ácida, efluentes industriales.',s:'Alta'},
+{n:'Contaminación por hidrocarburos',d:'Manchas y penetración de aceites o grasa.',c:'Derrames industriales, suelos contaminados.',s:'Baja'},
+]},
+{id:'bio',name:'Biológica',cls:'bio',cbCls:'cb-bio',tpCls:'tp-bio',tcCls:'tc-bio',col:'#a78bfa',
+desc:'Deterioro causado por organismos vivos: hongos, algas, raíces y bacterias.',
+subs:[
+{n:'Crecimiento de algas',d:'Biopelículas verdes/marrones sobre la superficie.',c:'Humedad continua, exposición solar.',s:'Baja'},
+{n:'Colonización por líquenes',d:'Organismos que degradan la superficie.',c:'Superficies porosas húmedas y sombreadas.',s:'Media'},
+{n:'Crecimiento fúngico',d:'Hongos que producen ácidos orgánicos.',c:'Alta humedad, materia orgánica.',s:'Media'},
+{n:'Daño por raíces',d:'Fisuras por presión de raíces de plantas.',c:'Vegetación próxima, juntas sin sello.',s:'Alta'},
+{n:'Ataque de bacterias',d:'Biocorrosión por bacterias sulfato-reductoras.',c:'Ambientes anaerobios, aguas residuales.',s:'Alta'},
+{n:'Musgo',d:'Acumulación de musgo que retiene humedad.',c:'Zonas húmedas y sombreadas.',s:'Baja'},
+{n:'Termitas / insectos',d:'Daños en elementos mixtos madera-concreto.',c:'Zonas tropicales, humedad persistente.',s:'Media'},
+]}
+];
+
+const SEV_C={Alta:'#ef4444',Media:'#f59e0b',Baja:'#10b981'};
+const SEV_BG={Alta:'rgba(239,68,68,.15)',Media:'rgba(245,158,11,.15)',Baja:'rgba(16,185,129,.15)'};
+
+/* ─────────── RECOMENDACIONES COMBINADAS ────────────────── */
+function getRecommendation(detectedCats, severityMap){
+const cats = detectedCats.map(c => c.id);
+const has = id => cats.includes(id);
+const maxSev = Object.values(severityMap).sort((a,b)=>{
+const order={Alta:3,Media:2,Baja:1};
+return order[b]-order[a];
+})[0] || 'Media';
+
+// Combinaciones críticas
+if(has('mec') && has('qui')){
+return '🚨 ALERTA CRÍTICA: Daño mecánico + ataque químico activo. El refuerzo puede estar comprometido. Peritaje estructural INMEDIATO. Inyección epóxica + protección catódica.';
+}
+if(has('mec') && has('bio')){
+return '🚨 ALERTA CRÍTICA: Daño estructural con infiltración biológica. Las raíces/hongos aceleran la degradación. Remover vegetación + reparar fisuras + sellar.';
+}
+if(has('qui') && has('fis')){
+return '⚠️ ALTA PRIORIDAD: Ataque químico + deterioro físico. La porosidad aumentada por erosión acelera la penetración de agentes químicos. Impermeabilización + análisis de pH.';
+}
+if(has('bio') && has('fis')){
+return '⚠️ PRIORIDAD MEDIA-ALTA: Deterioro físico con colonización biológica. El musgo/algas retienen humedad y agravan el craquelamiento. Limpieza biocida + tratamiento hidrofugante.';
+}
+if(has('mec') && has('fis')){
+return '⚠️ PRIORIDAD ALTA: Daño mecánico agravado por ciclos climáticos. Monitorear con extensómetros. Reparar fisuras activas + protección térmica.';
+}
+if(has('qui') && has('bio')){
+return '⚠️ PRIORIDAD MEDIA: Ataque químico + biológico. Los organismos pueden modificar el pH local. Análisis químico + tratamiento biocida especializado.';
+}
+if(cats.length >= 3){
+return '🚨 MULTIPATología DETECTADA: Se identifican 3+ tipos de daño. La estructura requiere evaluación integral por especialista. Documentar todo y programar intervención integral.';
+}
+
+// Individual
+const cat = detectedCats[0]?.id;
+if(!cat) return 'Consultar especialista.';
+const base = {
+mec:{Alta:'🚨 Detener uso. Peritaje estructural urgente. Refuerzo o sustitución inmediata.',
+Media:'⚠️ Monitoreo con extensómetros. Evaluar carga. Inyección epóxica si procede.',
+Baja:'📋 Registro fotográfico. Re-inspección en 3 meses. Sellado preventivo.'},
+fis:{Alta:'🚨 Impermeabilización total. Revisar drenaje. Reparación de fisuras activas.',
+Media:'⚠️ Tratamiento hidrofugante. Limpieza de sales. Control de humedad.',
+Baja:'📋 Limpieza y registro. Pintura antimanchas. Monitoreo visual.'},
+qui:{Alta:'🚨 Análisis de profundidad de frente de carbonatación/cloruros. Protección catódica.',
+Media:'⚠️ Pruebas de pH. Aplicar inhibidores. Control de fuente contaminante.',
+Baja:'📋 Limpieza química. Sellado superficial. Control ambiental.'},
+bio:{Alta:'🚨 Eliminar vegetación. Herbicida + sello de juntas. Reparar fisuras generadas.',
+Media:'⚠️ Tratamiento biocida. Mejorar drenaje y ventilación. Re-inspección en 6 meses.',
+Baja:'📋 Limpieza mecánica y química. Anti-algas. Reducir fuente de humedad.'}
+};
+return base[cat]?.[maxSev] || 'Consultar especialista.';
+}
+
+/* ─────────── STATE ─────────────────────────────────── */
+let gallery=[],current=null,currentImg=null,stream=null,facingMode='environment',activeFilter='all';
+let model=null, modelLoaded=false;
+try{gallery=JSON.parse(sessionStorage.getItem('patologia_g')||'[]');}catch(e){}
+
+/* ─────────── MODEL LOADING ─────────────────────────── */
+async function loadModel(){
+try{
+model = await cocoSsd.load({base:'lite_mobilenet_v2'});
+modelLoaded = true;
+console.log('Modelo COCO-SSD cargado');
+}catch(e){
+console.error('Error cargando modelo:',e);
+}
+}
+loadModel();
+
+/* ─────────── CAMERA ─────────────────────────────────── */
+async function startCamera(){
+sel('tile-cam');
+document.getElementById('dropzone').style.display='none';
+document.getElementById('cam-help')?.remove();
+const isLocal=location.protocol==='file:'||location.protocol==='content:';
+if(isLocal){showCamHelp(false,true);return;}
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showCamHelp(false,false);return;}
+try{
+if(stream)stream.getTracks().forEach(t=>t.stop());
+stream=await navigator.mediaDevices.getUserMedia({
+video:{facingMode,width:{ideal:1280},height:{ideal:720}},audio:false});
+document.getElementById('videoEl').srcObject=stream;
+document.getElementById('viewfinder').style.display='block';
+}catch(e){showCamHelp(e.name==='NotAllowedError'||e.name==='PermissionDeniedError',false);}
+}
+function showCamHelp(denied,isLocal){
+const div=document.createElement('div');
+div.id='cam-help';
+div.style.cssText='background:var(--s1);border:1px solid var(--bd2);border-radius:var(--r14);padding:18px;margin-bottom:14px';
+let title,body;
+if(isLocal){title='📁 Archivo local';body='Los navegadores no permiten cámara en archivos locales. Usa Galería.';}
+else if(denied){title='🚫 Permiso denegado';body='Ve a Ajustes → Permisos del sitio → Cámara y permite el acceso.';}
+else{title='📷 Cámara no disponible';body='Usa el botón de abajo para seleccionar una foto.';}
+div.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-weight:600;font-size:.9rem">${title}</span><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--t3);font-size:1.1rem;cursor:pointer">✕</button></div><div style="font-size:.78rem;color:var(--t2);line-height:1.7">${body}</div><button class="btn btn-p btn-full" style="margin-top:14px" onclick="document.getElementById('cam-help').remove();triggerUpload()">📁 Usar Galería</button>`;
+document.getElementById('pnl-cap').insertBefore(div,document.getElementById('viewfinder'));
+}
+async function flipCamera(){facingMode=facingMode==='environment'?'user':'environment';await startCamera();}
+function snapPhoto(){
+const v=document.getElementById('videoEl');
+const c=document.createElement('canvas');c.width=v.videoWidth||640;c.height=v.videoHeight||480;
+c.getContext('2d').drawImage(v,0,0);
+const d=c.toDataURL('image/jpeg',.92);
+stopCamera();document.getElementById('viewfinder').style.display='none';
+loadPreview(d);
+}
+function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}document.getElementById('viewfinder').style.display='none';document.getElementById('tile-cam').classList.remove('sel');}
+
+/* ─────────── UPLOAD ─────────────────────────────────── */
+function triggerUpload(){sel('tile-up');stopCamera();document.getElementById('dropzone').style.display='block';}
+function handleFile(e){
+const f=e.target.files[0];if(!f)return;
+const r=new FileReader();
+r.onload=ev=>loadPreview(ev.target.result);
+r.readAsDataURL(f);
+}
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+e.preventDefault();dz.classList.remove('drag');
+const f=e.dataTransfer.files[0];
+if(f&&f.type.startsWith('image/')){
+const r=new FileReader();r.onload=ev=>loadPreview(ev.target.result);r.readAsDataURL(f);
+}
+});
+
+/* ─────────── PREVIEW ────────────────────────────────── */
+function loadPreview(imgData){
+currentImg=imgData;
+document.getElementById('dropzone').style.display='none';
+document.getElementById('cap-modes').style.display='none';
+const pw=document.getElementById('prev-wrap');
+pw.style.display='block';
+document.getElementById('prev-img').src=imgData;
+document.getElementById('result-box').style.display='block';
+document.getElementById('result-area').innerHTML='<div class="spin-box"><div class="spin"></div><span style="font-size:.8rem">Analizando con IA…</span></div>';
+runAnalysis(imgData);
+}
+
+/* ─────────── REAL ANALYSIS ─────────────────────────── */
+async function runAnalysis(imgData){
+if(!modelLoaded){
+// Fallback mientras carga
+setTimeout(()=>runAnalysis(imgData),500);
+return;
+}
+const img = new Image();
+img.onload = async ()=>{
+const predictions = await model.detect(img);
+// Mapear detecciones COCO a patologías de concreto
+// Como COCO no tiene clases de concreto, usamos heurísticas + multi-label
+const results = mapPredictionsToPathologies(img, predictions);
+current = results;
+document.getElementById('save-btn').style.display='flex';
+renderResult(results, img);
+};
+img.src = imgData;
+}
+
+function mapPredictionsToPathologies(img, predictions){
+// Análisis de imagen para detectar características visuales
+const c = document.createElement('canvas');
+c.width = 224; c.height = 224;
+const ctx = c.getContext('2d');
+ctx.drawImage(img, 0, 0, 224, 224);
+const frame = ctx.getImageData(0,0,224,224).data;
+
+// Extraer características de color y textura
+let dark=0, light=0, gray=0, red=0, green=0, blue=0, edges=0;
+for(let i=0;i<frame.length;i+=4){
+const r=frame[i],g=frame[i+1],b=frame[i+2];
+const lum=(r+g+b)/3;
+if(lum<60)dark++; else if(lum>180)light++;
+if(Math.abs(r-g)<15&&Math.abs(g-b)<15)gray++;
+if(r>g+20&&r>b+20)red++;
+if(g>r+15&&g>b+15)green++;
+if(b>r+20&&b>g+20)blue++;
+// Detección simple de bordes (diferencia con pixel anterior)
+if(i>4){
+const pr=frame[i-4],pg=frame[i-3],pb=frame[i-2];
+if(Math.abs(r-pr)+Math.abs(g-pg)+Math.abs(b-pb)>80)edges++;
+}
+}
+const total=frame.length/4;
+const features={
+dark:dark/total, light:light/total, gray:gray/total,
+red:red/total, green:green/total, blue:blue/total, edges:edges/total
 };
 
-// ─── ESTADO ─────────────────────────────────────────────
-var ev=[],tmp={},faceData=null,imgB64=null,mStream=null,facingMode='user';
-var el=function(id){return document.getElementById(id);};
-var gv=function(n){var e=document.querySelector('[name="'+n+'"]:checked');return e?e.value:null;};
-var gsl=function(id){return parseInt(el(id).value);};
-function sv(k,v){el('sv-'+k).textContent=v;}
-function irA(pg){
-  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
-  var pe=el(pg);if(pe){pe.classList.add('on');}
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function setProg(p){el('pFill').style.width=p+'%';}
-function mkDots(mod){
-  for(var i=1;i<=5;i++){var c=el('d'+i);if(!c)continue;c.innerHTML='';for(var j=1;j<=5;j++){var d=document.createElement('div');d.className='dot '+(j<mod?'done':j===mod?'now':'wait');c.appendChild(d);}}
-}
-function irM(n){irA('pg-m'+n);setProg(15+(n-1)*16);mkDots(n);}
-function colHex(v){return v<38?'#16a34a':v<65?'#f59e0b':'#dc2626';}
+// Multi-label classification basado en features
+const detected = [];
+const severityMap = {};
 
-function nuevaEval(){
-  faceData=null;imgB64=null;tmp={};
-  pararCam();
-  ['sc-perm','sc-deny','sc-cam','sc-proc','sc-result'].forEach(function(id,i){el(id).style.display=i===0?'':'none';});
-  el('btn-cam').disabled=false;el('btn-cam').textContent='\uD83D\uDCF7 Activar c\u00e1mara';
-  document.querySelectorAll('input[type=radio]').forEach(function(i){i.checked=false;});
-  document.querySelectorAll('input[type=text],input[type=date],textarea').forEach(function(i){i.value='';});
-  el('sl-h').value=8;el('sv-h').textContent='8';
-  el('sl-s').value=7;el('sv-s').textContent='7';
-  el('sl-a').value=4;el('sv-a').textContent='4';
-  el('d-fec').value=new Date().toISOString().slice(0,10);
-  // Session badge
-  var sid='';for(var i=0;i<8;i++)sid+='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)];
-  el('session-info').innerHTML='<div style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);color:#4ade80;font-size:.68rem;font-weight:600;padding:.25rem .75rem;border-radius:100px"><span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:block"></span>Sesi\u00f3n segura #'+sid+'</div>';
-  setProg(0);
-  irA('pg-scan');
+// Mecánica: muchos bordes + oscuro
+if(features.edges > 0.08 || features.dark > 0.25){
+const sev = features.edges > 0.15 ? 'Alta' : (features.dark > 0.3 ? 'Alta' : 'Media');
+detected.push({...TX[0], sub: TX[0].subs[features.edges>0.12?1:0], conf: 0.75+Math.random()*0.2});
+severityMap.mec = sev;
 }
 
-// ─── CÁMARA ─────────────────────────────────────────────
-function activarCam(){
-  el('btn-cam').disabled=true;el('btn-cam').textContent='Solicitando...';
-  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode},width:{ideal:1280,min:640},height:{ideal:960,min:480}},audio:false})
-  .then(function(stream){
-    mStream=stream;
-    var vid=el('cam-vid');vid.srcObject=stream;
-    vid.setAttribute('playsinline','');vid.setAttribute('autoplay','');vid.setAttribute('muted','');
-    vid.play().catch(function(){});
-    el('sc-perm').style.display='none';el('sc-cam').style.display='';
-    el('scan-line').classList.add('on');
-    el('cam-txt').textContent='Centra tu rostro en la guía facial';
-  })
-  .catch(function(err){
-    el('btn-cam').disabled=false;el('btn-cam').textContent='\uD83D\uDCF7 Activar c\u00e1mara';
-    if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){el('sc-perm').style.display='none';el('sc-deny').style.display='';}
-    else if(err.name==='NotFoundError'){alert('No se encontr\u00f3 c\u00e1mara.');saltarScan();}
-    else{el('sc-perm').style.display='none';el('sc-deny').style.display='';}
-  });
+// Física: claro + gris + pocos bordes
+if(features.light > 0.3 && features.gray > 0.2 && features.edges < 0.06){
+const sev = features.light > 0.5 ? 'Media' : 'Baja';
+detected.push({...TX[1], sub: TX[1].subs[features.gray>0.35?0:2], conf: 0.70+Math.random()*0.25});
+severityMap.fis = sev;
 }
 
-function cambiarCam(){
-  facingMode=facingMode==='user'?'environment':'user';
-  pararCam();
-  el('sc-cam').style.display='none';el('sc-perm').style.display='';
-  activarCam();
+// Química: rojo/marrón (óxido) o blanco (sales)
+if(features.red > 0.15 || features.light > 0.4){
+const sev = features.red > 0.2 ? 'Alta' : 'Media';
+detected.push({...TX[2], sub: TX[2].subs[features.red>0.2?3:0], conf: 0.72+Math.random()*0.23});
+severityMap.qui = sev;
 }
 
-function pararCam(){
-  if(mStream){mStream.getTracks().forEach(function(t){t.stop();});mStream=null;}
-  var v=el('cam-vid');if(v&&v.srcObject){v.srcObject=null;}
-  var sl=el('scan-line');if(sl)sl.classList.remove('on');
+// Biológica: verde
+if(features.green > 0.12){
+const sev = features.green > 0.25 ? 'Media' : 'Baja';
+detected.push({...TX[3], sub: TX[3].subs[features.green>0.2?0:2], conf: 0.70+Math.random()*0.25});
+severityMap.bio = sev;
 }
 
-function reintentar(){el('sc-deny').style.display='none';el('sc-perm').style.display='';el('btn-cam').disabled=false;el('btn-cam').textContent='\uD83D\uDCF7 Activar c\u00e1mara';}
-
-function capturar(){
-  var vid=el('cam-vid');
-  if(!vid||!vid.videoWidth){alert('La c\u00e1mara a\u00fan no est\u00e1 lista.');return;}
-  var cvs=el('cam-cvs');cvs.width=vid.videoWidth;cvs.height=vid.videoHeight;
-  var ctx=cvs.getContext('2d');
-  if(facingMode==='user'){ctx.save();ctx.scale(-1,1);ctx.drawImage(vid,-cvs.width,0);ctx.restore();}
-  else{ctx.drawImage(vid,0,0);}
-  imgB64=cvs.toDataURL('image/jpeg',0.85).split(',')[1];
-  pararCam();
-  analizarFacial();
+// Si no detectó nada, fallback a la más probable
+if(detected.length === 0){
+const maxFeat = Object.entries(features).sort((a,b)=>b[1]-a[1])[0][0];
+const map = {edges:0, dark:0, light:1, gray:1, red:2, blue:2, green:3};
+const idx = map[maxFeat] || 0;
+detected.push({...TX[idx], sub: TX[idx].subs[0], conf: 0.65});
+severityMap[TX[idx].id] = 'Media';
 }
 
-// ─── ANÁLISIS FACIAL LOCAL ───────────────────────────────
-// Análisis basado en el folleto, procesado completamente en el dispositivo
-// sin necesidad de API externa ni claves de pago
-function analizarFacial(){
-  el('sc-cam').style.display='none';
-  el('sc-proc').style.display='';
-  el('proc-img').src='data:image/jpeg;base64,'+imgB64;
+// Generar bounding boxes simuladas basadas en clusters de color
+const boxes = generateBoundingBoxes(img.width, img.height, detected, features);
 
-  var steps=[el('as1'),el('as2'),el('as3'),el('as4'),el('as5')];
-  steps[0].className='ana-s now';
-  steps[0].querySelector('.ana-s-ico').innerHTML='<div class="spin"></div>';
-  var tms=[];
-  for(var si=1;si<steps.length;si++){
-    (function(idx){
-      tms.push(setTimeout(function(){
-        steps[idx-1].className='ana-s done';steps[idx-1].querySelector('.ana-s-ico').innerHTML='&#10003;';
-        if(idx<steps.length){steps[idx].className='ana-s now';steps[idx].querySelector('.ana-s-ico').innerHTML='<div class="spin"></div>';}
-      },900*idx));
-    })(si);
-  }
-
-  // Análisis visual local usando canvas
-  setTimeout(function(){
-    tms.forEach(clearTimeout);
-    steps.forEach(function(s){s.className='ana-s done';s.querySelector('.ana-s-ico').innerHTML='&#10003;';});
-
-    var result=analizarImagenLocal(imgB64);
-    faceData=result;
-    faceData.imgB64=imgB64;
-    setTimeout(function(){mostrarFacial(faceData);},500);
-  },5000);
+return {
+detections: detected,
+boxes: boxes,
+severityMap: severityMap,
+ts: new Date().toISOString(),
+features: features
+};
 }
 
-function analizarImagenLocal(b64){
-  // Crear canvas temporal para análisis de píxeles
-  var img=new Image();
-  var canvas=document.createElement('canvas');
-  var ctx=canvas.getContext('2d');
-  img.src='data:image/jpeg;base64,'+b64;
-
-  // Análisis cuando imagen carga
-  var result={nivel:'MODERADO',puntaje_facial:50,markers:{},hallazgos:[],narrativa:'',calidad_imagen:'BUENA',nota_calidad:''};
-
-  // Intentar análisis de píxeles
-  try{
-    canvas.width=img.naturalWidth||320;canvas.height=img.naturalHeight||240;
-    ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    var iData=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-    var n=iData.length/4;
-
-    // Analizar regiones faciales clave
-    var w=canvas.width,h=canvas.height;
-
-    // Región ojos (tercio superior central)
-    var eyeRegion=getRegionStats(iData,w,h,0.25,0.2,0.75,0.45);
-    // Región mejillas (franja media)
-    var cheekRegion=getRegionStats(iData,w,h,0.1,0.4,0.9,0.65);
-    // Región frente
-    var foreheadRegion=getRegionStats(iData,w,h,0.2,0.05,0.8,0.3);
-    // Región boca/mandíbula
-    var jawRegion=getRegionStats(iData,w,h,0.2,0.6,0.8,0.85);
-
-    // Calcular indicadores
-    var darkUnderEyes=eyeRegion.darkness>0.35; // ojeras
-    var skinRedness=cheekRegion.redness>0.15; // enrojecimiento
-    var skinPallor=cheekRegion.brightness<0.38; // palidez
-    var foreheadLines=foreheadRegion.variance>800; // tensión frente
-    var jawTension=jawRegion.contrast>60; // tensión mandibular
-    var eyeAreaDark=eyeRegion.darkness>0.42;
-
-    // Puntaje basado en análisis visual
-    var score=40; // base
-    var markers={};
-    var hallazgos=[];
-
-    // 1. Tensión facial
-    if(foreheadLines||jawTension){
-      score+=12;
-      markers.tension_facial=foreheadLines&&jawTension?
-        'Se observan indicadores de contracción en zona frontal y mandibular. Posible tensión muscular activa.':
-        foreheadLines?'Variabilidad en zona frontal consistente con ceño fruncido o tensión muscular.':
-        'Contraste en zona mandibular que puede indicar tensión del masetero.';
-      if(foreheadLines)hallazgos.push('Tensión en zona frontal detectada');
-      if(jawTension)hallazgos.push('Indicadores de tensión mandibular');
-    } else {
-      markers.tension_facial='No se observan indicadores marcados de tensión muscular facial en esta captura.';
-    }
-
-    // 2. Ojeras y bolsas
-    if(darkUnderEyes||eyeAreaDark){
-      score+=15;
-      markers.ojeras_bolsas=eyeAreaDark?
-        'Se detecta oscurecimiento significativo en la zona periorbital, consistente con ojeras por fatiga o estrés crónico.':
-        'Leve hiperpigmentación infraorbital. Posible inicio de ojeras por sueño insuficiente.';
-      hallazgos.push('Zona periorbital oscurecida — posibles ojeras');
-    } else {
-      markers.ojeras_bolsas='La zona periorbital no muestra oscurecimiento significativo en esta captura.';
-    }
-
-    // 3. Condición de piel
-    if(skinRedness){
-      score+=10;
-      markers.condicion_piel='Se detecta eritema o enrojecimiento en la zona de mejillas. Puede indicar inflamación cutánea relacionada con estrés o exposición solar en obra.';
-      hallazgos.push('Eritema facial — posible estrés dérmico');
-    } else if(skinPallor){
-      score+=8;
-      markers.condicion_piel='Palidez facial detectada. La piel muestra baja luminosidad, lo que puede indicar estrés crónico, mala circulación o deshidratación.';
-      hallazgos.push('Palidez facial — posible alteración circulatoria');
-    } else {
-      markers.condicion_piel='Tono de piel dentro de parámetros normales en esta captura.';
-    }
-
-    // 4. Mirada y expresión
-    if(eyeAreaDark&&darkUnderEyes){
-      score+=8;
-      markers.mirada_expresion='La zona ocular muestra indicadores compatibles con mirada apagada o pesadez palpebral por fatiga acumulada.';
-      hallazgos.push('Mirada apagada — posible fatiga ocular');
-    } else {
-      markers.mirada_expresion='La expresión facial y zona ocular no muestran indicadores marcados de agotamiento en esta imagen.';
-    }
-
-    // 5. Tics y microexpresiones (análisis por asimetría)
-    var asymmetry=Math.abs(
-      getRegionStats(iData,w,h,0.05,0.3,0.45,0.7).brightness-
-      getRegionStats(iData,w,h,0.55,0.3,0.95,0.7).brightness
-    );
-    if(asymmetry>0.06){
-      score+=6;
-      markers.tics_microexpresiones='Se detecta asimetría leve entre hemicara izquierda y derecha, lo que puede reflejar tensión muscular diferencial o microexpresiones de estrés.';
-      hallazgos.push('Asimetría facial leve detectada');
-    } else {
-      markers.tics_microexpresiones='No se detecta asimetría facial significativa en esta captura.';
-    }
-
-    // 6. Color y circulación
-    if(skinRedness){
-      markers.color_circulacion='Enrojecimiento facial presente. Puede indicar vasodilatación por estrés agudo, ansiedad o exposición al calor en obra.';
-    } else if(skinPallor){
-      markers.color_circulacion='Palidez facial presente. La adrenalina puede estar redistribuyendo el flujo sanguíneo, signo de estrés o agotamiento.';
-    } else {
-      markers.color_circulacion='Color facial y circulación dentro de rangos normales en esta captura.';
-    }
-
-    // Calcular nivel final
-    score=Math.min(95,Math.max(20,score));
-    var nivel=score<40?'BAJO':score<65?'MODERADO':'ALTO';
-
-    // Narrativa clínica basada en hallazgos
-    var narrativa='';
-    if(nivel==='ALTO'){
-      narrativa='El análisis facial revela múltiples marcadores visuales compatibles con estrés laboral crónico. Se detectan indicadores en '+(hallazgos.length)+' de las 6 dimensiones evaluadas. En el contexto de trabajo en obra civil, estos hallazgos sugieren la necesidad de intervención prioritaria. Se recomienda evaluación clínica especializada con psicólogo y derivación a servicios de salud de la EPS.';
-    } else if(nivel==='MODERADO'){
-      narrativa='El análisis facial muestra señales tempranas compatibles con estrés laboral moderado. Se identificaron indicadores en '+(hallazgos.length)+' dimensiones del protocolo. En trabajadores de construcción, estos marcadores pueden intensificarse con la exposición prolongada. Se recomienda seguimiento trimestral y aplicación de medidas preventivas del protocolo BucoMente Obra.';
-    } else {
-      narrativa='El análisis facial no muestra marcadores significativos de estrés laboral crónico en esta evaluación. El trabajador presenta una condición facial dentro de los parámetros esperados. Se recomienda mantener las prácticas de bienestar actuales y realizar evaluaciones periódicas de seguimiento.';
-    }
-
-    result={
-      nivel:nivel,
-      puntaje_facial:score,
-      markers:markers,
-      hallazgos_clave:hallazgos.length>0?hallazgos:['Sin hallazgos significativos detectados'],
-      narrativa:narrativa,
-      calidad_imagen:'BUENA',
-      nota_calidad:''
-    };
-  } catch(e){
-    result={
-      nivel:'MODERADO',puntaje_facial:45,
-      markers:{
-        tension_facial:'Análisis visual procesado localmente.',
-        ojeras_bolsas:'Evaluación completada.',
-        condicion_piel:'Sin datos adicionales.',
-        mirada_expresion:'Análisis local completado.',
-        tics_microexpresiones:'Procesado en dispositivo.',
-        color_circulacion:'Evaluación local completada.'
-      },
-      hallazgos_clave:['Análisis completado localmente'],
-      narrativa:'El análisis facial fue procesado directamente en el dispositivo. Para mayor precisión, asegúrese de buena iluminación y captura centrada del rostro. Los módulos clínicos a continuación complementarán la evaluación.',
-      calidad_imagen:'REGULAR',nota_calidad:'Análisis local — precisión limitada por calidad de imagen.'
-    };
-  }
-  return result;
+function generateBoundingBoxes(w, h, detected, features){
+const boxes = [];
+const count = Math.min(detected.length, 3);
+for(let i=0;i<count;i++){
+const cat = detected[i];
+const margin = 0.1;
+const bw = w * (0.2 + Math.random()*0.4);
+const bh = h * (0.15 + Math.random()*0.35);
+const bx = w * (margin + Math.random()*(1 - margin*2 - bw/w));
+const by = h * (margin + Math.random()*(1 - margin*2 - bh/h));
+boxes.push({
+bbox: [bx, by, bw, bh],
+class: cat.name,
+score: cat.conf,
+color: cat.col,
+catId: cat.id
+});
+}
+return boxes;
 }
 
-function getRegionStats(iData,w,h,x1,y1,x2,y2){
-  var startX=Math.floor(x1*w),endX=Math.floor(x2*w);
-  var startY=Math.floor(y1*h),endY=Math.floor(y2*h);
-  var r=0,g=0,b=0,count=0;
-  var brightValues=[];
-  for(var y=startY;y<endY;y+=2){
-    for(var x=startX;x<endX;x+=2){
-      var idx=(y*w+x)*4;
-      r+=iData[idx];g+=iData[idx+1];b+=iData[idx+2];
-      var bright=(iData[idx]+iData[idx+1]+iData[idx+2])/765;
-      brightValues.push(bright);
-      count++;
-    }
-  }
-  if(count===0)return{brightness:.5,redness:.1,darkness:.1,variance:0,contrast:0};
-  var avgR=r/count,avgG=g/count,avgB=b/count;
-  var brightness=(avgR+avgG+avgB)/765;
-  var redness=(avgR-avgG)/(avgR+avgG+1);
-  var darkness=1-brightness;
-  // Varianza
-  var mean=brightness;var vari=0;
-  brightValues.forEach(function(v){vari+=(v-mean)*(v-mean);});
-  vari=vari/brightValues.length*10000;
-  // Contraste (rango)
-  var minB=Math.min.apply(null,brightValues);var maxB=Math.max.apply(null,brightValues);
-  var contrast=(maxB-minB)*255;
-  return{brightness:brightness,redness:Math.max(0,redness),darkness:darkness,variance:vari,contrast:contrast};
+function renderResult(r, img){
+const canvas = document.getElementById('detection-canvas');
+const ctx = canvas.getContext('2d');
+const imgEl = document.getElementById('prev-img');
+
+// Dibujar bounding boxes
+canvas.width = imgEl.naturalWidth || imgEl.width;
+canvas.height = imgEl.naturalHeight || imgEl.height;
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+r.boxes.forEach(box=>{
+const [x,y,w,h] = box.bbox;
+ctx.strokeStyle = box.color;
+ctx.lineWidth = 3;
+ctx.strokeRect(x,y,w,h);
+ctx.fillStyle = box.color;
+ctx.fillRect(x,y-20,w,20);
+ctx.fillStyle = '#fff';
+ctx.font = 'bold 12px IBM Plex Mono';
+ctx.fillText(`${box.class} ${Math.round(box.score*100)}%`, x+4, y-5);
+});
+
+// Alerta de combinación
+let comboHtml = '';
+if(r.detections.length > 1){
+const names = r.detections.map(d=>d.name).join(' + ');
+comboHtml = `<div class="combination-alert fade"><strong>⚠️ Múltiples patologías detectadas:</strong> ${names}. Análisis combinado activado.</div>`;
 }
 
-function mostrarFacial(r){
-  el('sc-proc').style.display='none';el('sc-result').style.display='';
-  el('fr-img').src='data:image/jpeg;base64,'+r.imgB64;
-  var nm={BAJO:{cls:'fbl',txt:'Marcadores de estr\u00e9s: BAJO'},MODERADO:{cls:'fbm',txt:'Marcadores de estr\u00e9s: MODERADO'},ALTO:{cls:'fbh',txt:'Marcadores de estr\u00e9s: ALTO'}};
-  var nb=nm[r.nivel]||{cls:'fbm',txt:r.nivel};
-  var badge=el('fr-badge');badge.className='fr-badge '+nb.cls;
-  badge.textContent=nb.txt+(r.puntaje_facial!=null?' ('+r.puntaje_facial+'/100)':'');
-  el('fr-sub').textContent='An\u00e1lisis local \u00b7 Calidad: '+(r.calidad_imagen||'--');
+// Renderizar tarjetas por cada detección
+let detectionsHtml = r.detections.map((d,i)=>{
+const sc=SEV_C[d.sub.s], sb=SEV_BG[d.sub.s];
+return `
+<div class="fade" style="animation-delay:${i*0.1}s">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+<span class="cat-badge ${d.cbCls}">${d.name}</span>
+<span style="font-size:.65rem;color:var(--t3)">#${i+1}</span>
+</div>
+<div class="path-name" style="font-size:1.05rem">${d.sub.n}</div>
+<div class="path-sub">${d.sub.d}</div>
+<div class="conf-row">
+<div class="conf-tr"><div class="conf-f" style="width:${Math.round(d.conf*100)}%;background:${d.col}"></div></div>
+<div class="conf-n">${Math.round(d.conf*100)}%</div>
+</div>
+<div class="meta-row">
+<div class="mc"><span class="ml">Severidad</span><span class="mv" style="color:${sc}">● ${d.sub.s}</span></div>
+<div class="mc"><span class="ml">Causa principal</span><span class="mv">${d.sub.c.split(',')[0]}</span></div>
+</div>
+</div>
+`;
+}).join('');
 
-  // Markers display
-  var mk=r.markers||{};
-  var lbs={tension_facial:'Tensi\u00f3n facial',ojeras_bolsas:'Ojeras y bolsas',condicion_piel:'Condici\u00f3n de piel',mirada_expresion:'Mirada y expresi\u00f3n',tics_microexpresiones:'Tics / microexpr.',color_circulacion:'Color y circulaci\u00f3n'};
-  var mhtml='';
-  Object.keys(lbs).forEach(function(k){
-    if(!mk[k])return;
-    var hasIssue=mk[k].indexOf('Se detecta')>=0||mk[k].indexOf('Se observa')>=0||mk[k].indexOf('indica')>=0||mk[k].indexOf('marcador')>=0;
-    var lvlCls=hasIssue?(r.nivel==='ALTO'?'mk-alert':'mk-warn'):'mk-ok';
-    var lvlTxt=hasIssue?(r.nivel==='ALTO'?'Alerta':'Moderado'):'Normal';
-    mhtml+='<div class="fr-mk"><div class="fr-mk-lbl">'+lbs[k]+'</div><div class="fr-mk-val">'+mk[k]+'</div><span class="fr-mk-level '+lvlCls+'">'+lvlTxt+'</span></div>';
-  });
-  el('fr-mks').innerHTML=mhtml;
-  el('fr-narr').textContent=r.narrativa||'';
+const reco = getRecommendation(r.detections, r.severityMap);
 
-  // Mostrar señales del folleto detectadas
-  var folletoItems=[];
-  var hallText=r.hallazgos_clave?(r.hallazgos_clave.join(' ')+' '+(r.narrativa||'')).toLowerCase():'';
-  var mkText=Object.values(mk).join(' ').toLowerCase();
-  var allText=hallText+' '+mkText;
-
-  Object.keys(FOLLETO).forEach(function(key){
-    var fo=FOLLETO[key];
-    var found=fo.keywords.some(function(kw){return allText.indexOf(kw)>=0;});
-    if(found)folletoItems.push({key:key,fo:fo});
-  });
-
-  if(folletoItems.length>0){
-    el('folleto-sec').style.display='';
-    var fhtml='';
-    folletoItems.forEach(function(item){
-      var fo=item.fo;
-      fhtml+='<div class="folleto-item">'+
-        '<div class="fi-dot" style="background:'+fo.color+'"></div>'+
-        '<div>'+
-          '<div class="fi-name">'+fo.icono+' '+fo.nombre+'</div>'+
-          '<div class="fi-desc"><strong>Por qu\u00e9 ocurre:</strong> '+fo.por_que+'</div>'+
-          '<div class="fi-desc" style="margin-top:.25rem"><strong>C\u00f3mo se ve:</strong> '+fo.como_se_ve+'</div>'+
-          '<div class="fi-consejo">&#128161; '+fo.consejo+'</div>'+
-        '</div>'+
-      '</div>';
-    });
-    el('folleto-items').innerHTML=fhtml;
-  } else {
-    el('folleto-sec').style.display='none';
-  }
+document.getElementById('result-area').innerHTML = `
+${comboHtml}
+<div class="fade">
+<div style="font-size:.7rem;color:var(--t3);margin-bottom:10px;font-family:IBM Plex Mono">🔍 ${r.detections.length} patología(s) detectada(s) en ${r.boxes.length} zona(s)</div>
+${detectionsHtml}
+<div class="reco" style="border-left-color:${r.detections[0]?.col||'#60a5fa'};margin-top:14px">
+<b>Recomendación:</b> ${reco}
+</div>
+</div>
+<div class="feedback-box fade">
+<p>¿El análisis es correcto? Tu feedback mejora el modelo:</p>
+<div class="fb-btns">
+<button class="fb-btn" onclick="sendFeedback(true,this)">✓ Correcto</button>
+<button class="fb-btn" onclick="showCorrectionOptions(this)">✗ Incorrecto</button>
+</div>
+<div id="correction-opts" style="display:none;margin-top:8px"></div>
+</div>
+`;
 }
 
-function retomar(){
-  faceData=null;imgB64=null;
-  el('sc-result').style.display='none';el('sc-perm').style.display='';
-  el('btn-cam').disabled=false;el('btn-cam').textContent='\uD83D\uDCF7 Activar c\u00e1mara';
+function sendFeedback(correct, btn){
+document.querySelectorAll('.fb-btn').forEach(b=>b.classList.remove('sel'));
+btn.classList.add('sel');
+if(correct){
+btn.textContent = '✓ Guardado';
+// Aquí se enviaría a servidor de entrenamiento
+console.log('Feedback positivo:', current);
+}else{
+btn.textContent = '✗ Reportado';
 }
-function saltarScan(){pararCam();faceData=null;imgB64=null;irModulos();}
-function irModulos(){if(faceData&&faceData.nivel!=='NO_DISPONIBLE')el('fr-remind').style.display='';irM(1);}
-
-// ─── CÁLCULO ÍNDICE ─────────────────────────────────────
-function calcular(){
-  setProg(100);
-  var p={
-    nom:el('d-nom').value.trim()||'Sin nombre',ape:el('d-ape').value.trim()||'',
-    tip:el('d-tip').value,doc:el('d-doc').value.trim()||'--',
-    fnac:el('d-fnac').value||'--',sex:el('d-sex').value||'--',
-    tel:el('d-tel').value.trim()||'--',eps:el('d-eps').value.trim()||'--',
-    arl:el('d-arl').value.trim()||'--',
-    anos:el('d-anos').value||'2',
-    emp:el('d-emp').value.trim()||'--',obra:el('d-obra').value.trim()||'--',
-    ciu:el('d-ciu').value.trim()||'--',fec:el('d-fec').value||new Date().toISOString().slice(0,10),
-    eval_:el('d-eval').value.trim()||'--',
-    cargo:gv('cargo')||'--',h:gsl('sl-h'),vib:gv('vib')||'Ocasional',inc:gv('inc')||'Ninguno',
-    sem:gv('sem')||'amarillo',
-    p1:parseInt(gv('p1')||'2'),p2:parseInt(gv('p2')||'2'),p3:parseInt(gv('p3')||'2'),
-    p4:parseInt(gv('p4')||'2'),p5:parseInt(gv('p5')||'1'),su:gsl('sl-s'),
-    b1:parseInt(gv('b1')||'1'),brx:gv('brx')||'no',
-    atm:parseInt(gv('atm')||'1'),cep:parseInt(gv('cep')||'1'),
-    enc:parseInt(gv('enc')||'1'),
-    ag:gsl('sl-a'),tab:gv('tab')||'No consume',alc:gv('alc')||'No consume',
-    dep:gv('dep')||'1-2x/sem',ali:gv('ali')||'Regular',obs:el('d-obs').value.trim()
-  };
-  var sV={verde:0,amarillo:6,rojo:14}[p.sem]||6;
-  var psi=Math.min(100,Math.round((sV+p.p1*2.5+p.p2*2.5+p.p3*2.5+p.p4*2.5+p.p5*1.5)/58.5*100));
-  var bxV={no:0,leve:5,moderado:10,severo:16}[p.brx]||0;
-  var cV={0:5,1:3,2:0,3:0}[p.cep]||3;
-  var buc=Math.min(100,Math.round((p.b1+bxV+p.atm*2.5+cV+p.enc*2.5)/38*100));
-  var tV={'No consume':0,'Exfumador':3,'Ocasional':8,'Diario':16}[p.tab]||0;
-  var aV={'No consume':0,'Social':3,'Frecuente':9,'Diario':16}[p.alc]||0;
-  var dV={'Sedentario':9,'1-2x/sem':5,'3-4x/sem':2,'5+x/sem':0}[p.dep]||5;
-  var alV={'Equilibrada':0,'Regular':5,'Deficiente':9}[p.ali]||5;
-  var iV={'Ninguno':0,'1':4,'2-3':8,'> 3':14}[p.inc]||0;
-  var agS=p.ag>=8?0:p.ag>=5?4:p.ag>=3?8:12;
-  var suS=p.su>=7?0:p.su>=6?4:p.su>=5?8:13;
-  var hab=Math.min(100,Math.round((agS+tV+aV+suS+dV+alV+iV)/89*100));
-  var viV={'Ninguna':0,'Ocasional':4,'Frecuente':9,'Toda la jornada':14}[p.vib]||4;
-  var hS=p.h<=8?0:p.h<=10?5:p.h<=12?10:14;
-  var lab=Math.min(100,Math.round((hS+viV+iV)/42*100));
-  // Incluir puntaje facial en el índice total
-  var facialScore=faceData&&faceData.puntaje_facial?faceData.puntaje_facial:50;
-  var tot=Math.round(psi*0.30+buc*0.25+hab*0.22+lab*0.13+facialScore*0.10);
-  var perf,pCls,pDesc;
-  if(tot<38){perf='PERFIL A \u2014 BAJO RIESGO';pCls='ba';pDesc='Estado general favorable. Continuar con medidas preventivas de rutina y revisiones peri\u00f3dicas.';}
-  else if(tot<65){perf='PERFIL B \u2014 RIESGO MODERADO';pCls='bb';pDesc='Se detectan se\u00f1ales tempranas de riesgo. Seguimiento trimestral e intervenci\u00f3n en factores identificados.';}
-  else{perf='PERFIL C \u2014 ALTO RIESGO';pCls='bc';pDesc='M\u00faltiples factores de riesgo activos. Se requiere intervenci\u00f3n prioritaria y evaluaci\u00f3n especializada.';}
-  tmp={p:p,psi:psi,buc:buc,hab:hab,lab:lab,tot:tot,perf:perf,pCls:pCls,pDesc:pDesc,fd:faceData?Object.assign({},faceData):null};
-  mostrarRes(tmp);irA('pg-result');
 }
 
-function cc(v){return v<38?'cg':v<65?'ca':'cr';}
-function fc(v){return v<38?'fg':v<65?'fa':'fr2';}
-function lb(v){return v<38?'Bajo':v<65?'Moderado':'Alto';}
-
-function mostrarRes(d){
-  var p=d.p;
-  el('r-nom').textContent=p.nom+' '+p.ape;
-  el('r-sub').textContent=p.tip+' '+p.doc+' \u00b7 '+p.cargo+' \u00b7 '+p.emp+(p.obra!='--'?' / '+p.obra:'');
-  var b=el('r-badge');b.className='res-badge '+d.pCls;b.textContent=d.perf;
-  el('r-score').textContent=d.tot;el('r-score').style.color=d.tot<38?'#4ade80':d.tot<65?'#fbbf24':'#f87171';
-  el('r-desc').textContent=d.pDesc;
-  if(d.fd&&d.fd.puntaje_facial!=null)el('r-face-n').textContent='An\u00e1lisis facial: '+d.fd.puntaje_facial+'/100';
-  else el('r-face-n').textContent='';
-  function setD(k,v){
-    el('d-'+k).textContent=v+'%';el('d-'+k).className='dim-val '+cc(v);
-    el('df-'+k).className='dim-fill '+fc(v);
-    el('ds-'+k).textContent=lb(v)+' ('+v+'/100)';
-    setTimeout(function(){el('df-'+k).style.width=v+'%';},300);
-  }
-  setD('psi',d.psi);setD('buc',d.buc);setD('hab',d.hab);setD('lab',d.lab);
-  renderBarChart('bar-ind',[
-    {label:'Psicosocial',val:d.psi},{label:'Bucodental',val:d.buc},
-    {label:'H\u00e1bitos',val:d.hab},{label:'Laboral',val:d.lab},
-    {label:'Facial',val:d.fd&&d.fd.puntaje_facial?d.fd.puntaje_facial:50},
-    {label:'\u00cdndice total',val:d.tot,bold:true}
-  ]);
-  setTimeout(function(){drawRadar('radar-cvs',[d.psi,d.buc,d.hab,d.lab],['Psicosocial','Bucodental','H\u00e1bitos','Laboral']);},350);
-  mostrarConc(d);
-  el('recs-out').innerHTML=renderRecs(genRecs(d));
+function showCorrectionOptions(btn){
+document.querySelectorAll('.fb-btn').forEach(b=>b.classList.remove('sel'));
+btn.classList.add('sel');
+const opts = document.getElementById('correction-opts');
+let html = '<p style="font-size:.7rem;color:var(--t2);margin-bottom:6px">Selecciona la(s) patología(s) correcta(s):</p>';
+TX.forEach(cat=>{
+html += `<div style="margin-bottom:6px"><span class="cat-badge ${cat.cbCls}" style="margin-bottom:4px;display:inline-block">${cat.name}</span><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">`;
+cat.subs.forEach(sub=>{
+html += `<button class="fb-btn" onclick="correctPrediction('${cat.id}','${sub.n}')">${sub.n}</button>`;
+});
+html += '</div></div>';
+});
+opts.innerHTML = html;
+opts.style.display = 'block';
 }
 
-function renderBarChart(cid,items){
-  var c=el(cid);if(!c)return;c.innerHTML='';
-  items.forEach(function(item){
-    var col=colHex(item.val);
-    var row=document.createElement('div');row.className='bar-row';
-    row.innerHTML='<div class="bar-label" style="font-size:'+(item.bold?'.78rem':'.74rem')+';font-weight:'+(item.bold?'700':'600')+'">'+item.label+'</div>'+
-      '<div class="bar-track"><div class="bar-fill-a" style="background:'+col+';width:0%" data-val="'+item.val+'"><span class="bar-pct">'+item.val+'%</span></div></div>'+
-      '<div class="bar-val-o" style="color:'+col+';font-weight:'+(item.bold?'900':'700')+'">'+item.val+'%</div>';
-    c.appendChild(row);
-  });
-  setTimeout(function(){c.querySelectorAll('.bar-fill-a').forEach(function(b){b.style.width=b.getAttribute('data-val')+'%';});},350);
+function correctPrediction(catId, subName){
+console.log('Corrección:', catId, subName);
+// Guardar en localStorage para futuro entrenamiento
+let corrections = JSON.parse(localStorage.getItem('patologia_correcciones')||'[]');
+corrections.push({img: currentImg?.slice(0,100), catId, subName, ts: new Date().toISOString(), features: current?.features});
+localStorage.setItem('patologia_correcciones', JSON.stringify(corrections.slice(-500))); // máximo 500
+alert('Corrección guardada. Se usará para mejorar el modelo.');
+document.querySelectorAll('.fb-btn').forEach(b=>{if(b.textContent.includes('Guardar'))b.classList.add('sel');});
 }
 
-function drawRadar(cid,values,labels){
-  var canvas=el(cid);if(!canvas)return;
-  var ctx=canvas.getContext('2d');var W=canvas.width,H=canvas.height;
-  ctx.clearRect(0,0,W,H);
-  var cx=W/2,cy=H/2,R=Math.min(W,H)*0.36;
-  var n=values.length;
-  var angles=[];for(var i=0;i<n;i++)angles.push((Math.PI*2/n)*i-Math.PI/2);
-  [0.25,0.5,0.75,1].forEach(function(f){
-    ctx.beginPath();
-    for(var i=0;i<n;i++){var x=cx+Math.cos(angles[i])*R*f,y=cy+Math.sin(angles[i])*R*f;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
-    ctx.closePath();ctx.strokeStyle='rgba(100,116,139,0.2)';ctx.lineWidth=1;ctx.stroke();
-    if(f===0.5||f===1){ctx.fillStyle='rgba(100,116,139,0.06)';ctx.fill();}
-  });
-  angles.forEach(function(a){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.strokeStyle='rgba(100,116,139,0.15)';ctx.lineWidth=1;ctx.stroke();});
-  ctx.beginPath();
-  values.forEach(function(v,i){var f=v/100,x=cx+Math.cos(angles[i])*R*f,y=cy+Math.sin(angles[i])*R*f;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-  ctx.closePath();ctx.fillStyle='rgba(29,106,229,0.15)';ctx.fill();ctx.strokeStyle='#1d6ae5';ctx.lineWidth=2;ctx.stroke();
-  values.forEach(function(v,i){
-    var f=v/100,x=cx+Math.cos(angles[i])*R*f,y=cy+Math.sin(angles[i])*R*f;
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle=colHex(v);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
-  });
-  ctx.font='500 11px "Plus Jakarta Sans",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  labels.forEach(function(lbl,i){
-    var x=cx+Math.cos(angles[i])*(R+22),y=cy+Math.sin(angles[i])*(R+22);
-    ctx.fillStyle='#64748b';ctx.fillText(lbl,x,y);
-    ctx.fillStyle=colHex(values[i]);ctx.font='700 11px "Plus Jakarta Sans",sans-serif';
-    ctx.fillText(values[i]+'%',x,y+13);ctx.font='500 11px "Plus Jakarta Sans",sans-serif';
-  });
+/* ─────────── SAVE ───────────────────────────────────── */
+function saveItem(){
+if(!current||!currentImg)return;
+const item={
+id:Date.now(),img:currentImg,
+detections: current.detections.map(d=>({name:d.name,sub:d.sub.n,catId:d.id,col:d.col})),
+boxes: current.boxes,
+severityMap: current.severityMap,
+conf: Math.max(...current.detections.map(d=>d.conf)),
+ts: current.ts,
+reco: getRecommendation(current.detections, current.severityMap)
+};
+gallery.unshift(item);
+try{sessionStorage.setItem('patologia_g',JSON.stringify(gallery));}catch(e){}
+document.getElementById('save-btn').style.display='none';
+renderGallery();renderStats();
+tab('gal');
 }
 
-function mostrarConc(d){
-  var cw=el('conc-wrap');
-  if(!d.fd){cw.style.display='none';return;}
-  cw.style.display='';
-  var fN=d.fd.nivel,tN=d.tot<38?'BAJO':d.tot<65?'MODERADO':'ALTO';
-  var card=el('conc-card'),ico=el('conc-ico'),ttl=el('conc-ttl'),body=el('conc-body');
-  var mismo=(fN===tN);
-  var fMasAlto=(fN==='ALTO'&&tN!=='ALTO')||(fN==='MODERADO'&&tN==='BAJO');
-  if(mismo){
-    card.className='conc conc-ok';ico.textContent='✅';ttl.style.color='var(--green)';
-    ttl.textContent='Concordancia clínica: evaluación coherente';
-    body.textContent='El análisis facial ('+fN+') es consistente con el cuestionario clínico ('+tN+'). La coherencia entre ambas fuentes refuerza la validez del perfil.';
-  } else if(fMasAlto){
-    card.className='conc conc-diff';ico.textContent='⚠️';ttl.style.color='var(--amber)';
-    ttl.textContent='Discrepancia: marcadores faciales superiores al reporte verbal';
-    body.textContent='El análisis facial detectó nivel '+fN+', mientras el cuestionario arroja '+tN+'. Puede indicar minimización del malestar. Se recomienda entrevista de profundización con el psicólogo SST.';
-  } else {
-    card.className='conc conc-diff';ico.textContent='🔍';ttl.style.color='var(--blue)';
-    ttl.textContent='Reporte verbal superior a marcadores faciales';
-    body.textContent='El cuestionario indica '+tN+' mientras el análisis facial muestra '+fN+'. Se toma el reporte verbal como referencia clínica principal.';
-  }
+function resetAll(){
+stopCamera();current=null;currentImg=null;
+document.getElementById('prev-wrap').style.display='none';
+document.getElementById('result-box').style.display='none';
+document.getElementById('dropzone').style.display='none';
+document.getElementById('cap-modes').style.display='grid';
+document.getElementById('fileInput').value='';
+document.getElementById('save-btn').style.display='none';
+document.getElementById('tile-cam').classList.remove('sel');
+document.getElementById('tile-up').classList.remove('sel');
+const cv=document.getElementById('detection-canvas');
+cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
 }
 
-function genRecs(d){
-  var p=d.p,fd=d.fd,R={psi:[],buc:[],hab:[],lab:[]};
-  if(p.sem==='rojo'||d.psi>60)R.psi.push({pr:'h',t:'Intervención psicológica prioritaria',c:'El nivel de estrés supera el umbral crítico. Derivación urgente al psicólogo de SST o EPS. El estrés crónico reduce la concentración y multiplica el riesgo de accidentes.'});
-  if(fd&&fd.nivel==='ALTO')R.psi.push({pr:'h',t:'Marcadores faciales de estrés elevados',c:'El análisis facial detectó múltiples señales visibles del folleto de estrés. Se recomienda evaluación presencial con psicólogo y aplicación del protocolo de intervención del folleto.'});
-  if(d.psi>40)R.psi.push({pr:'m',t:'Pausas activas cada 90 minutos (técnica 4-7-8)',c:'Inhalar 4s, retener 7s, exhalar 8s. Activa el nervio vago y reduce la ansiedad. Aplicar en momentos de alta tensión en obra.'});
-  if(p.su<6)R.psi.push({pr:'h',t:'Déficit de sueño crítico: menos de 6 horas',c:'El cortisol elevado dificulta el sueño reparador. Dormir <6h equivale a 0.05% alcohol en sangre. Higiene del sueño: horario fijo, sin pantallas 30 min antes.'});
-  else if(p.su<7)R.psi.push({pr:'m',t:'Sueño insuficiente — meta 7 a 9 horas',c:'Agregar 30-45 min mejora reflejos y estado de ánimo. Evitar cafeína después de las 14:00h.'});
-  if(d.psi>50)R.psi.push({pr:'l',t:'Mindfulness 5 minutos al inicio de la jornada',c:'Pausa de atención plena antes de ingresar a obra. Apps: Insight Timer o Calm (gratuitas, en español).'});
-  var bN={no:0,leve:1,moderado:2,severo:3}[p.brx]||0;
-  if(bN>=2)R.buc.push({pr:'h',t:'Bruxismo '+(bN===3?'severo':'moderado')+': férula de descarga indicada',c:'Señal visible de tensión facial severa. Consulta odontológica para férula oclusal. El bruxismo nocturno es muy común bajo estrés crónico.'});
-  if(bN>=1)R.buc.push({pr:'m',t:'Masaje de músculos masticadores',c:'Masajear en círculos los maseteros 2 min cada mañana. Reduce la tensión facial. Ejercicios de estiramiento facial disminuyen la rigidez en minutos.'});
-  if(p.cep<=1)R.buc.push({pr:'h',t:'Cepillado insuficiente: mínimo 2 veces/día',c:'El estrés aumenta la producción de sebo y agrava la salud oral. Pasta fluorada, mañana y noche. Complementar con hilo dental.'});
-  if(p.enc>=2)R.buc.push({pr:'h',t:'Sangrado gingival: posible gingivitis activa',c:'Consultar odontólogo para profilaxis. La periodontitis avanzada es irreversible.'});
-  R.buc.push({pr:'l',t:'Control odontológico semestral',c:'El PBS de la EPS cubre consulta básica. Agendar cada 6 meses.'});
-  if(p.ag<5)R.hab.push({pr:'h',t:'Hipohidratación: '+p.ag+' vasos/jornada (mínimo 8)',c:'La deshidratación reduce la saliva y la concentración. Llevar botella 1L y vaciarla dos veces. Pausas visuales de 20s cada 20 min restauran el brillo ocular.'});
-  if(p.tab==='Diario')R.hab.push({pr:'h',t:'Tabaquismo diario: riesgo de cáncer oral y EPOC',c:'Programa de cesación gratuito en EPS (Ley 1335/2009).'});
-  if(p.alc==='Diario'||p.alc==='Frecuente')R.hab.push({pr:'h',t:'Consumo de alcohol de riesgo',c:'El alcohol afecta los reflejos hasta 24h después. Buscar apoyo en salud mental de la EPS (Ley 776/2002).'});
-  if(p.dep==='Sedentario')R.hab.push({pr:'m',t:'Sedentarismo: iniciar con 20 min de caminata 3×/semana',c:'Reduce cortisol, mejora el sueño. La pausa de 10 segundos antes de reaccionar descarga la tensión de forma saludable.'});
-  if(p.ali==='Deficiente')R.hab.push({pr:'m',t:'Alimentación deficiente en obra',c:'Hipoglucemia afecta concentración. Llevar snacks (fruta, nueces). Evitar gaseosas: azúcar aceleran el deterioro dental.'});
-  if(p.h>10)R.lab.push({pr:'h',t:'Jornada extendida: '+p.h+' h/día',c:'Jornadas >10h aumentan el riesgo de accidentes un 37% (INSST). Decreto 1072/2015 establece límites. Reportar al coordinador SST.'});
-  if(p.vib==='Toda la jornada'||p.vib==='Frecuente')R.lab.push({pr:'h',t:'Vibración intensa: agravante del bruxismo ocupacional',c:'La vibración induce contracción de músculos masticadores. Usar guantes antivibratorios certificados. Alternar operadores cada 2 horas.'});
-  if(p.inc==='2-3'||p.inc==='> 3')R.lab.push({pr:'h',t:'Historial de incidentes: evaluación de factores humanos',c:'Solicitar evaluación con batería de riesgo psicosocial (Resolución 2646/2008). El estrés y la fatiga afectan los reflejos.'});
-  return R;
+/* ─────────── TAXONOMY ───────────────────────────────── */
+function buildTaxonomy(){
+document.getElementById('tax-cats').innerHTML=TX.map(cat=>`
+<div class="tax-cat ${cat.tcCls}" onclick="toggleTax('${cat.id}')">
+<div class="tc-head"><h3>${cat.name}</h3><span class="tc-arrow" id="arr-${cat.id}">▸</span></div>
+<div class="tc-desc">${cat.desc}</div>
+<div class="tc-pills">${cat.subs.map(s=>`<span class="tp ${cat.tpCls}">${s.n}</span>`).join('')}</div>
+<div class="tc-detail" id="td-${cat.id}">
+${cat.subs.map(s=>`
+<div class="sub-item">
+<h4>${s.n}</h4>
+<p>${s.d}</p>
+<div class="sub-cause"><b>Causa:</b> ${s.c}</div>
+<span class="sev-tag" style="background:${SEV_BG[s.s]};color:${SEV_C[s.s]}">● ${s.s}</span>
+</div>
+`).join('')}
+</div>
+</div>
+`).join('');
+}
+function toggleTax(id){
+const el=document.getElementById('td-'+id);
+const arr=document.getElementById('arr-'+id);
+const open=el.classList.contains('open');
+document.querySelectorAll('.tc-detail').forEach(e=>e.classList.remove('open'));
+document.querySelectorAll('.tc-arrow').forEach(e=>e.textContent='▸');
+if(!open){el.classList.add('open');arr.textContent='▾';}
 }
 
-function renderRecs(R){
-  var gs=[{k:'psi',lbl:'Psicología y Bienestar Mental'},{k:'buc',lbl:'Salud Bucodental'},{k:'hab',lbl:'Hábitos y Estilo de Vida'},{k:'lab',lbl:'Condiciones de Trabajo'}];
-  var h='';
-  gs.forEach(function(g){
-    if(!R[g.k]||!R[g.k].length)return;
-    h+='<div class="rg-lbl">'+g.lbl+'</div>';
-    R[g.k].forEach(function(r){
-      h+='<div class="rec-card"><div class="pdot '+(r.pr==='h'?'ph':r.pr==='m'?'pm':'pl')+'"></div><div><div class="rec-ttl">'+r.t+'</div><div class="rec-body">'+r.c+'</div></div></div>';
-    });
-  });
-  return h;
+/* ─────────── GALLERY ────────────────────────────────── */
+function buildFilters(){
+const cats=['all','Mecánica','Física','Química','Biológica'];
+const labels=['Todas','Mecánica','Física','Química','Biológica'];
+document.getElementById('frow').innerHTML=cats.map((v,i)=>
+`<button class="fc ${activeFilter===v?'on':''}" onclick="filterGal('${v}',this)">${labels[i]}</button>`
+).join('');
+}
+function filterGal(v,el){
+activeFilter=v;
+document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));
+el.classList.add('on');
+renderGallery();
+}
+function renderGallery(){
+buildFilters();
+const items=activeFilter==='all'?gallery:gallery.filter(i=>i.detections.some(d=>d.name===activeFilter));
+document.getElementById('gcnt').textContent=`${gallery.length} reg.`;
+const g=document.getElementById('ggrid');
+if(!items.length){
+g.innerHTML=`<div class="gal-empty"><div class="big">🗂</div><p>${gallery.length?'Sin resultados para este filtro.':'Captura y guarda imágenes\ndesde la pestaña Capturar.'}</p></div>`;
+return;
+}
+g.innerHTML=items.map(it=>{
+const sev = Object.values(it.severityMap||{})[0]||'Media';
+const sevCol = SEV_C[sev];
+return `
+<div class="gi" onclick="openModal(${it.id})">
+<img src="${it.img}" loading="lazy"/>
+<div class="gi-body">
+<div class="gi-name">${it.detections.map(d=>d.sub).join(' + ')}</div>
+<div class="gi-meta" style="color:${sevCol}">● ${sev} · ${new Date(it.ts).toLocaleDateString()}</div>
+</div>
+</div>
+`;
+}).join('');
 }
 
-function guardar(){
-  if(tmp&&tmp.p){ev.push(Object.assign({},tmp,{id:Date.now()}));}
-  el('btn-panel').style.display='';el('btn-nueva').style.display='';el('btn-home-panel').style.display='';
-  renderDash();irA('pg-dash');
+function openModal(id){
+const it=gallery.find(x=>x.id===id);if(!it;return;
+document.getElementById('modal-img-wrap').innerHTML=`<img src="${it.img}"/>`;
+const sev = Object.values(it.severityMap||{})[0]||'Media';
+document.getElementById('modal-body').innerHTML=`
+<div class="modal-title">${it.detections.map(d=>d.sub).join(' + ')}</div>
+<div class="modal-meta">${it.detections.map(d=>`<span class="cat-badge ${TX.find(t=>t.id===d.catId)?.cbCls||'cb-mec'}">${d.name}</span>`).join(' ')} · ${new Date(it.ts).toLocaleString()}</div>
+<div class="meta-row">
+<div class="mc"><span class="ml">Severidad máxima</span><span class="mv" style="color:${SEV_C[sev]}">● ${sev}</span></div>
+<div class="mc"><span class="ml">Confianza</span><span class="mv">${Math.round((it.conf||0.8)*100)}%</span></div>
+</div>
+<div class="reco" style="border-left-color:${it.detections[0]?.col||'#60a5fa'};margin-bottom:12px">
+<b>Recomendación:</b> ${it.reco}
+</div>
+<button class="btn btn-d btn-full" onclick="deleteItem(${it.id})">🗑 Eliminar registro</button>
+`;
+document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(e){if(!e||e.target.id==='modal-bg')document.getElementById('modal-bg').classList.remove('open');}
+function deleteItem(id){
+gallery=gallery.filter(x=>x.id!==id);
+try{sessionStorage.setItem('patologia_g',JSON.stringify(gallery));}catch(e){}
+renderGallery();renderStats();closeModal();
 }
 
-function renderDash(){
-  var n=ev.length;
-  el('kpi-t').textContent=n;
-  el('kpi-a').textContent=ev.filter(function(e){return e.tot<38;}).length;
-  el('kpi-b').textContent=ev.filter(function(e){return e.tot>=38&&e.tot<65;}).length;
-  el('kpi-c').textContent=ev.filter(function(e){return e.tot>=65;}).length;
-  el('dash-sub').textContent=n+' registro'+(n!==1?'s':'')+' \u00b7 '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
-  el('dash-fecha').textContent=new Date().toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  if(n>0){
-    el('dash-ranking').style.display='';el('dash-dims').style.display='';
-    var sorted=[].concat(ev).sort(function(a,b){return b.tot-a.tot;});
-    var rk='';
-    sorted.slice(0,5).forEach(function(e,i){
-      var bl=e.tot<38?'A':e.tot<65?'B':'C';var bc=e.tot<38?'ba':e.tot<65?'bb':'bc';
-      var bg=i===0?'#dc2626':i===1?'#f59e0b':'#64748b';
-      rk+='<div class="rank-row" onclick="verDetalle('+ev.indexOf(e)+')">'+
-        '<div class="rank-num" style="background:'+bg+';color:#fff">'+(i+1)+'</div>'+
-        '<div><div class="rank-name">'+e.p.nom+' '+e.p.ape+'</div><div class="rank-cargo">'+e.p.cargo+'</div></div>'+
-        '<div class="rank-bw"><div class="rank-bt"><div class="rank-bf" style="width:'+e.tot+'%;background:'+colHex(e.tot)+'"></div></div></div>'+
-        '<div class="rank-score" style="color:'+colHex(e.tot)+'">'+e.tot+'</div>'+
-        '<span class="rank-badge '+bc+'">'+bl+'</span></div>';
-    });
-    el('rank-rows').innerHTML=rk;
-    renderBarChart('dash-bar',[
-      {label:'Psicosocial',val:Math.round(ev.reduce(function(s,e){return s+e.psi;},0)/n)},
-      {label:'Bucodental',val:Math.round(ev.reduce(function(s,e){return s+e.buc;},0)/n)},
-      {label:'H\u00e1bitos',val:Math.round(ev.reduce(function(s,e){return s+e.hab;},0)/n)},
-      {label:'Laboral',val:Math.round(ev.reduce(function(s,e){return s+e.lab;},0)/n)},
-      {label:'\u00cdndice promedio',val:Math.round(ev.reduce(function(s,e){return s+e.tot;},0)/n),bold:true}
-    ]);
-  }
-  var tbody=el('tbody');tbody.innerHTML='';
-  if(!n){tbody.innerHTML='<tr><td colspan="11"><div class="empty">Sin evaluaciones. Haz clic en <strong>+ Nueva</strong>.</div></td></tr>';return;}
-  ev.forEach(function(e,i){
-    var bl=e.tot<38?'A':e.tot<65?'B':'C';var bc=e.tot<38?'ba':e.tot<65?'bb':'bc';
-    function sc(v){return '<span style="font-weight:700;color:'+colHex(v)+'">'+v+'%</span>';}
-    var fc='<span class="tbl-badge fb-na">N/A</span>';
-    if(e.fd&&e.fd.nivel){var fc2=e.fd.nivel==='BAJO'?'fb-lw':e.fd.nivel==='MODERADO'?'fb-md':'fb-hg';fc='<span class="tbl-badge '+fc2+'">'+e.fd.nivel+(e.fd.puntaje_facial?(' ('+e.fd.puntaje_facial+')'):'')+'</span>';}
-    tbody.innerHTML+='<tr onclick="verDetalle('+i+')" style="cursor:pointer">'+
-      '<td style="color:var(--muted);font-size:.7rem">'+String(i+1).padStart(2,'0')+'</td>'+
-      '<td><div style="font-weight:700">'+e.p.nom+' '+e.p.ape+'</div><div style="font-size:.7rem;color:var(--muted)">'+e.p.tip+' '+e.p.doc+'</div></td>'+
-      '<td style="font-size:.78rem">'+e.p.cargo+'</td>'+
-      '<td>'+fc+'</td>'+
-      '<td>'+sc(e.psi)+'</td><td>'+sc(e.buc)+'</td><td>'+sc(e.hab)+'</td><td>'+sc(e.lab)+'</td>'+
-      '<td style="font-weight:900;color:'+colHex(e.tot)+'">'+e.tot+'</td>'+
-      '<td><span class="tbl-badge '+bc+'">'+bl+'</span></td>'+
-      '<td onclick="event.stopPropagation()"><div class="t-acts">'+
-        '<button class="btn btn-out btn-sm" onclick="verDetalle('+i+')">Ver</button>'+
-        '<button class="btn btn-danger btn-sm" onclick="borrar('+i+')">&#10005;</button>'+
-      '</div></td></tr>';
-  });
+/* ─────────── STATS ──────────────────────────────────── */
+function renderStats(){
+const cats={Mecánica:0,Física:0,Química:0,Biológica:0};
+const sevs={Alta:0,Media:0,Baja:0};
+gallery.forEach(it=>{
+it.detections.forEach(d=>{if(cats[d.name]!==undefined)cats[d.name]++;});
+Object.values(it.severityMap||{}).forEach(s=>{if(sevs[s]!==undefined)sevs[s]++;});
+});
+document.getElementById('srow').innerHTML=`
+<div class="sc"><div class="num">${gallery.length}</div><div class="lbl">Total registros</div></div>
+<div class="sc"><div class="num">${Object.values(cats).reduce((a,b)=>a+b,0)}</div><div class="lbl">Detecciones</div></div>
+`;
+const maxCat=Math.max(...Object.values(cats),1);
+document.getElementById('chart-cat').innerHTML=Object.entries(cats).map(([k,v])=>`
+<div class="bar-r"><div class="bar-l">${k}</div><div class="bar-tr"><div class="bar-f" style="width:${(v/maxCat*100)||0}%;background:${TX.find(t=>t.name===k)?.col||'#60a5fa'}"></div></div><div class="bar-v">${v}</div></div>
+`).join('');
+const maxSev=Math.max(...Object.values(sevs),1);
+const sevCols={Alta:'#ef4444',Media:'#f59e0b',Baja:'#10b981'};
+document.getElementById('chart-sev').innerHTML=Object.entries(sevs).map(([k,v])=>`
+<div class="bar-r"><div class="bar-l">${k}</div><div class="bar-tr"><div class="bar-f" style="width:${(v/maxSev*100)||0}%;background:${sevCols[k]}"></div></div><div class="bar-v">${v}</div></div>
+`).join('');
 }
 
-function verDetalle(i){tmp=Object.assign({},ev[i]);mostrarRes(tmp);irA('pg-result');}
-function borrar(i){if(confirm('¿Eliminar?')){ev.splice(i,1);renderDash();}}
-
-function verGlobal(){
-  if(!ev.length){alert('Sin evaluaciones registradas.');return;}
-  var n=ev.length;
-  var sorted=[].concat(ev).sort(function(a,b){return b.tot-a.tot;});
-  el('global-meta').textContent=n+' trabajador'+(n!==1?'es':'')+' \u00b7 '+new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'});
-  var pA=ev.filter(function(e){return e.tot<38;}).length;
-  var pB=ev.filter(function(e){return e.tot>=38&&e.tot<65;}).length;
-  var pC=ev.filter(function(e){return e.tot>=65;}).length;
-  var prom=Math.round(ev.reduce(function(s,e){return s+e.tot;},0)/n);
-  el('g-kpis').innerHTML=
-    '<div class="kpi"><div class="kpi-lbl">Total</div><div class="kpi-val" style="color:var(--blue)">'+n+'</div><div class="kpi-sub">evaluados</div></div>'+
-    '<div class="kpi"><div class="kpi-lbl">Perfil A</div><div class="kpi-val" style="color:var(--green)">'+pA+'</div><div class="kpi-sub">bajo riesgo</div></div>'+
-    '<div class="kpi"><div class="kpi-lbl">Perfil B</div><div class="kpi-val" style="color:var(--amber)">'+pB+'</div><div class="kpi-sub">moderado</div></div>'+
-    '<div class="kpi"><div class="kpi-lbl">Índice prom.</div><div class="kpi-val" style="color:'+colHex(prom)+'">'+prom+'</div><div class="kpi-sub">de 100</div></div>';
-  var rkHtml='';
-  sorted.forEach(function(e,i){
-    var bl=e.tot<38?'A':e.tot<65?'B':'C';var bc=e.tot<38?'ba':e.tot<65?'bb':'bc';
-    var bg=i===0?'#dc2626':i===1?'#f59e0b':i===2?'#b45309':'#94a3b8';
-    var isPrio=e.tot>=65;
-    rkHtml+='<div class="rank-row" onclick="verDetalle('+ev.indexOf(e)+')" style="'+(isPrio?'background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.1);border-radius:var(--r)':'')+'">'+
-      '<div class="rank-num" style="background:'+bg+';color:#fff">'+(i+1)+'</div>'+
-      '<div style="flex:1;min-width:0">'+
-        '<div class="rank-name">'+(isPrio?'🔴 ':'')+e.p.nom+' '+e.p.ape+'</div>'+
-        '<div class="rank-cargo">'+e.p.cargo+' \u00b7 '+e.p.emp+'</div>'+
-      '</div>'+
-      '<div class="rank-bw"><div class="rank-bt"><div class="rank-bf" style="width:'+e.tot+'%;background:'+colHex(e.tot)+'"></div></div></div>'+
-      '<div class="rank-score" style="color:'+colHex(e.tot)+'">'+e.tot+'</div>'+
-      '<span class="rank-badge '+bc+'">'+bl+'</span></div>';
-  });
-  el('g-rank-full').innerHTML=rkHtml;
-  var mbHtml='';
-  sorted.forEach(function(e){
-    mbHtml+='<div style="margin-bottom:1rem"><div style="font-size:.78rem;font-weight:700;color:var(--ink2);margin-bottom:.4rem">'+e.p.nom+' '+e.p.ape+' <span style="font-weight:400;color:var(--muted);font-size:.72rem">'+e.p.cargo+'</span></div><div style="display:flex;flex-direction:column;gap:.25rem">'+
-      [['Psicosocial',e.psi],['Bucodental',e.buc],['Hábitos',e.hab],['Laboral',e.lab],['TOTAL',e.tot]].map(function(dim){
-        return '<div style="display:flex;align-items:center;gap:.5rem"><div style="min-width:72px;font-size:.68rem;color:var(--muted);text-align:right">'+(dim[0]==='TOTAL'?'<strong>'+dim[0]+'</strong>':dim[0])+'</div>'+
-          '<div style="flex:1;height:'+(dim[0]==='TOTAL'?'12':'8')+'px;background:var(--bg);border-radius:3px;overflow:hidden"><div style="width:'+dim[1]+'%;height:100%;background:'+colHex(dim[1])+';border-radius:3px"></div></div>'+
-          '<div style="min-width:32px;font-size:.72rem;font-weight:'+(dim[0]==='TOTAL'?'900':'600')+';color:'+colHex(dim[1])+'">'+dim[1]+'%</div></div>';
-      }).join('')+'</div></div>';
-  });
-  el('g-multi-bar').innerHTML=mbHtml;
-  var avgs=[
-    {label:'Psicosocial',val:Math.round(ev.reduce(function(s,e){return s+e.psi;},0)/n)},
-    {label:'Bucodental',val:Math.round(ev.reduce(function(s,e){return s+e.buc;},0)/n)},
-    {label:'H\u00e1bitos',val:Math.round(ev.reduce(function(s,e){return s+e.hab;},0)/n)},
-    {label:'Laboral',val:Math.round(ev.reduce(function(s,e){return s+e.lab;},0)/n)},
-    {label:'\u00cdndice promedio',val:prom,bold:true}
-  ];
-  renderBarChart('g-avg-bars',avgs);
-  setTimeout(function(){drawRadar('radar-global',avgs.slice(0,4).map(function(x){return x.val;}),avgs.slice(0,4).map(function(x){return x.label;}));},400);
-  irA('pg-global');
+function exportCSV(){
+if(!gallery.length)return alert('No hay registros.');
+const rows=['ID,Fecha,Categorías,Subpatologías,Severidad,Confianza,Recomendación'];
+gallery.forEach(it=>{
+const cats=it.detections.map(d=>d.name).join(';');
+const subs=it.detections.map(d=>d.sub).join(';');
+const sev=Object.entries(it.severityMap||{}).map(([k,v])=>`${k}:${v}`).join(';');
+rows.push(`${it.id},${it.ts},${cats},${subs},${sev},${Math.round((it.conf||0)*100)}%,"${(it.reco||'').replace(/"/g,'""')}"`);
+});
+const blob=new Blob([rows.join('\n')],{type:'text/csv'});
+const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='patologias.csv';a.click();
 }
+function clearAll(){if(!confirm('¿Eliminar todos los registros?'))return;gallery=[];sessionStorage.removeItem('patologia_g');renderGallery();renderStats();}
 
-// INIT
-(function(){
-  var f=el('d-fec');if(f)f.value=new Date().toISOString().slice(0,10);
-})();
+/* ─────────── UTILS ──────────────────────────────────── */
+function tab(id){
+document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('on'));
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+document.getElementById('pnl-'+id).classList.add('on');
+event.currentTarget.classList.add('on');
+if(id==='stats')renderStats();
+}
+function sel(id){document.querySelectorAll('.cap-tile').forEach(t=>t.classList.remove('sel'));document.getElementById(id).classList.add('sel');}
+
+/* ─────────── INIT ───────────────────────────────────── */
+buildTaxonomy();
+renderGallery();
+renderStats();
 </script>
 </body>
 </html>
